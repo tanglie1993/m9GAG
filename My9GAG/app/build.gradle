@@ -24,4 +24,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile files('libs/volley.jar')
     compile files('libs/gson-2.2.4.jar')
+    compile files('libs/photoview.jar')
+    compile files('libs/photoviewlibrary.jar')
 }

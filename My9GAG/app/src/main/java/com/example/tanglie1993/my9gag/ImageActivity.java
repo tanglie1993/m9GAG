@@ -12,6 +12,8 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
 
+import  uk.co.senab.photoview.PhotoViewAttacher;
+
 
 public class ImageActivity extends ActionBarActivity {
 
@@ -58,6 +60,8 @@ public class ImageActivity extends ActionBarActivity {
                     public void onResponse(Bitmap response)
                     {
                         imageView.setImageBitmap(response);
+
+                        PhotoViewAttacher mAttacher = new PhotoViewAttacher(imageView);
                     }
                 }, 0, 0, Bitmap.Config.RGB_565, null);
         newRequestQueue.add(imageRequest);
