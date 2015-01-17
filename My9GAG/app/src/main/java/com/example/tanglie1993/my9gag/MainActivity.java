@@ -19,6 +19,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import com.google.gson.Gson;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +37,8 @@ public class MainActivity extends Activity {
 
     ArrayAdapter<String> adapter;
 
+    AlphaInAnimationAdapter animationAdapter;
+
     List largeImageList;
 
     @Override
@@ -48,9 +51,11 @@ public class MainActivity extends Activity {
         largeImageList = new ArrayList<String>();
         listview.setAdapter(adapter);
         setContentView(listview);
-
         requestData();
         setListeners();
+
+        Intent intent = new Intent(MainActivity.this, DrawerTestActivity.class);
+        startActivity(intent);
     }
 
 

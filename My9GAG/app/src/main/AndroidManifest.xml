@@ -22,6 +22,10 @@
             android:name=".ImageActivity"
             android:label="@string/title_activity_image" >
         </activity>
+        <activity
+            android:name=".DrawerTestActivity"
+            android:label="@string/title_activity_drawer_test" >
+        </activity>
     </application>
 
 </manifest>

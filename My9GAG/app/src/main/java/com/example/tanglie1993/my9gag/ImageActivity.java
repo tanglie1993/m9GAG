@@ -5,7 +5,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,11 +21,18 @@ public class ImageActivity extends ActionBarActivity {
 
     ImageView imageView;
 
+    ListView listview;
+
+    ArrayAdapter<String> adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
+        setAdapter();
         requestData();
+
+
     }
 
 
@@ -66,5 +75,14 @@ public class ImageActivity extends ActionBarActivity {
                 }, 0, 0, Bitmap.Config.RGB_565, null);
         newRequestQueue.add(imageRequest);
 
+    }
+
+    private void setAdapter(){
+        listview = new ListView(this);
+        listview.findViewById(R.id.left_drawer);
+        adapter = new ArrayAdapter<String>(this,R.layout.array_list_view_layout);
+        adapter.add("hot");
+        adapter.add("new");
+        adapter.add("trend");
     }
 }

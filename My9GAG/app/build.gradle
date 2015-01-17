@@ -26,4 +26,7 @@ dependencies {
     compile files('libs/gson-2.2.4.jar')
     compile files('libs/photoview.jar')
     compile files('libs/photoviewlibrary.jar')
+    compile files('libs/listviewanimations_lib-manipulation_3.1.0.jar')
+    compile files('libs/listviewanimations_lib-core_3.1.0.jar')
+    compile files('libs/listviewanimations_lib-core-slh_3.1.0.jar')
 }
