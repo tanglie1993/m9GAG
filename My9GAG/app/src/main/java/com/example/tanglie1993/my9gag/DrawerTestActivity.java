@@ -1,10 +1,13 @@
 package com.example.tanglie1993.my9gag;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,11 +29,12 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
-public class DrawerTestActivity extends Activity
+public class DrawerTestActivity extends ActionBarActivity
 {
 
     private DrawerLayout mDrawerLayout;
@@ -38,9 +42,15 @@ public class DrawerTestActivity extends Activity
 
     ListView contentListview;
 
-    ArrayAdapter<String> contentAdapter;
+    List[] commentList;
 
-    List largeImageList;
+    List[] largeImageList;
+
+    String[] next;
+
+    String[] categoriesList;
+
+    int currentCategory;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -50,7 +60,20 @@ public class DrawerTestActivity extends Activity
 
         initDrawerListView();
         contentListview=(ListView) findViewById(R.id.testListView);
-        requestData("hot/0");
+
+        categoriesList=getResources().getStringArray(R.array.categories);
+        currentCategory=0;
+        next=new String[categoriesList.length];
+        Arrays.fill(next, "0");
+
+        commentList=new ArrayList[categoriesList.length];
+        largeImageList=new ArrayList[categoriesList.length];
+        for(int i=0;i<categoriesList.length;i++){
+            commentList[i]=new ArrayList<String>();
+            largeImageList[i]=new ArrayList<String>();
+        }
+
+        requestData(0);
 
     }
 
@@ -77,34 +100,34 @@ public class DrawerTestActivity extends Activity
                 // Highlight the selected item, update the title, and close the
                 // drawer
                 System.out.println("" + category[position]);
-                requestData(category[position] + "/0");
+                currentCategory=position;
+                requestData(position);
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
         mDrawerList.setFocusableInTouchMode(false);
     }
 
-    private void requestData(String suburl){
+    private void requestData(int position){
+        final int pos=position;
         RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://infinigag-us.aws.af.cm/" + suburl,  new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://infinigag-us.aws.af.cm/" + categoriesList[position] +"/" + next[position],  new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
-
-                List<String> commentList=new ArrayList<String>();
-                largeImageList=new ArrayList<String>();
-
                 Gson mGson = new Gson();
                 Feed.FeedRequestData frd = mGson.fromJson(response, Feed.FeedRequestData.class);
+                next[pos]=frd.getPage();
+
                 for(Feed feed : frd.data){
-                    commentList.add(feed.caption);
-                    largeImageList.add(feed.images.large);
+                    commentList[pos].add(feed.caption);
+                    largeImageList[pos].add(feed.images.large);
                     System.out.println(feed.caption);
                 }
 
-                String[] titles=new String[commentList.size()];
+                String[] titles=new String[commentList[pos].size()];
                 for(int i=0;i<titles.length;i++){
-                    titles[i]=commentList.get(i);
+                    titles[i]=(String) commentList[pos].get(i);
                 }
                 contentListview.setAdapter(new ArrayAdapter<String>(getApplicationContext(),
                         R.layout.array_list_view_layout, titles));
@@ -129,7 +152,7 @@ public class DrawerTestActivity extends Activity
                             public void onItemClick(AdapterView adapterView, View view,int arg2, long arg3)
                             {
                                 int selectedPosition = arg2;
-                                String imageurl = (String) largeImageList.get(selectedPosition);
+                                String imageurl = (String) largeImageList[currentCategory].get(selectedPosition);
                                 Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
                                 intent.putExtra("imageurl",imageurl);
                                 System.out.println("selectedPosition:"+selectedPosition);
@@ -137,5 +160,28 @@ public class DrawerTestActivity extends Activity
                             }
                         }
                 );
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_drawer_test, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_loadmore) {
+            requestData(currentCategory);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

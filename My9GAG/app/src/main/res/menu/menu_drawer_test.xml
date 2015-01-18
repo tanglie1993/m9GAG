@@ -2,6 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.tanglie1993.my9gag.DrawerTestActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+    <item android:id="@+id/action_loadmore" android:title="Loadmore"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>
