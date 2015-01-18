@@ -1,5 +1,7 @@
 package com.example.tanglie1993.my9gag;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -8,18 +10,37 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 public class DrawerTestActivity extends Activity
 {
 
-    private String[] mPlanetTitles;
     private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
     private ListView mDrawerList;
+
+    ListView contentListview;
+
+    ArrayAdapter<String> contentAdapter;
+
+    List largeImageList;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -27,47 +48,24 @@ public class DrawerTestActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer_test);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        initListView();
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.abc_ic_clear_mtrl_alpha, R.string.app_name,
-                R.string.hello_world)
-        {
-
-
-            public void onDrawerClosed(View view)
-            {
-
-                invalidateOptionsMenu(); // creates call to
-                // onPrepareOptionsMenu()
-            }
-
-
-            public void onDrawerOpened(View drawerView)
-            {
-
-                invalidateOptionsMenu(); // creates call to
-                // onPrepareOptionsMenu()
-            }
-        };
-
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-
+        initDrawerListView();
+        contentListview=(ListView) findViewById(R.id.testListView);
+        requestData("hot/0");
 
     }
 
-    private void initListView()
+    private void initDrawerListView()
     {
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        mPlanetTitles = getResources().getStringArray(R.array.city);
+        mDrawerList= (ListView) findViewById(R.id.left_drawer);
+
+       final String[] category = getResources().getStringArray(R.array.categories);
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.array_list_view_layout, mPlanetTitles));
+                R.layout.array_list_view_layout, category));
+
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new OnItemClickListener()
         {
@@ -78,40 +76,65 @@ public class DrawerTestActivity extends Activity
             {
                 // Highlight the selected item, update the title, and close the
                 // drawer
-                mDrawerList.setItemChecked(position, true);
-                setTitle(mPlanetTitles[position]);
+                System.out.println("" + category[position]);
+                requestData(category[position]+"/0");
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState)
-    {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+    private void requestData(String suburl){
+        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://infinigag-us.aws.af.cm/" + suburl,  new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+
+                List<String> commentList=new ArrayList<String>();
+                largeImageList=new ArrayList<String>();
+
+                Gson mGson = new Gson();
+                Feed.FeedRequestData frd = mGson.fromJson(response, Feed.FeedRequestData.class);
+                for(Feed feed : frd.data){
+                    commentList.add(feed.caption);
+                    largeImageList.add(feed.images.large);
+                    System.out.println(feed.caption);
+                }
+
+                String[] titles=new String[commentList.size()];
+                for(int i=0;i<titles.length;i++){
+                    titles[i]=commentList.get(i);
+                }
+                contentListview.setAdapter(new ArrayAdapter<String>(getApplicationContext(),
+                        R.layout.array_list_view_layout, titles));
+                setListeners();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                error.printStackTrace();
+            }
+        }) {};
+        mQueue.add(stringRequest);
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+    private void setListeners(){
+        contentListview.setOnItemClickListener
+                (
+                        new AdapterView.OnItemClickListener()
+                        {
+                            public void onItemClick(AdapterView adapterView, View view,int arg2, long arg3)
+                            {
+                                int selectedPosition = arg2;
+                                String imageurl = (String) largeImageList.get(selectedPosition);
+                                Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
+                                intent.putExtra("imageurl",imageurl);
+                                System.out.println("selectedPosition:"+selectedPosition);
+                                startActivity(intent);
+                            }
+                        }
+                );
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
-        if (mDrawerToggle.onOptionsItemSelected(item))
-        {
-            return true;
-        }
-        // Handle your other action bar items...
-
-        return super.onOptionsItemSelected(item);
-    }
-
 }

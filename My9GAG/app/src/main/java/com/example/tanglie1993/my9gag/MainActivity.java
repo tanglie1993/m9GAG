@@ -37,8 +37,6 @@ public class MainActivity extends Activity {
 
     ArrayAdapter<String> adapter;
 
-    AlphaInAnimationAdapter animationAdapter;
-
     List largeImageList;
 
     @Override
