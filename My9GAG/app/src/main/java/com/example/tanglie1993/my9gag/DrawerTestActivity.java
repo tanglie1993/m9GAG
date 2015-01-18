@@ -77,10 +77,11 @@ public class DrawerTestActivity extends Activity
                 // Highlight the selected item, update the title, and close the
                 // drawer
                 System.out.println("" + category[position]);
-                requestData(category[position]+"/0");
+                requestData(category[position] + "/0");
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
+        mDrawerList.setFocusableInTouchMode(false);
     }
 
     private void requestData(String suburl){

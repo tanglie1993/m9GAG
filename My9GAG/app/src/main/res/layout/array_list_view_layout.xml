@@ -9,4 +9,6 @@
     android:textAppearance="?android:attr/textAppearanceListItem"
     android:gravity="center_vertical"
     android:textAlignment="viewStart"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
     />
