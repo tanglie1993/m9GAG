@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -27,6 +28,7 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,8 +131,11 @@ public class DrawerTestActivity extends ActionBarActivity
                 for(int i=0;i<titles.length;i++){
                     titles[i]=(String) commentList[pos].get(i);
                 }
-                contentListview.setAdapter(new ArrayAdapter<String>(getApplicationContext(),
-                        R.layout.array_list_view_layout, titles));
+                ArrayAdapter myAdapter=new ArrayAdapter<String>(getApplicationContext(),
+                        R.layout.array_list_view_layout, titles);
+                AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(myAdapter);
+                animationAdapter.setAbsListView(contentListview);
+                contentListview.setAdapter(animationAdapter);
                 setListeners();
 
             }

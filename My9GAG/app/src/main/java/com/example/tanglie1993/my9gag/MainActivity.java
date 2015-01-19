@@ -37,6 +37,8 @@ public class MainActivity extends Activity {
 
     ArrayAdapter<String> adapter;
 
+    GAGanimationAdapter GAGadapter;
+
     List largeImageList;
 
     @Override
@@ -46,8 +48,9 @@ public class MainActivity extends Activity {
         listview = new ListView(this);
         listview.findViewById(R.id.listView);
         adapter = new ArrayAdapter<String>(this,R.layout.array_list_view_layout);
+        GAGadapter = new GAGanimationAdapter(adapter);
         largeImageList = new ArrayList<String>();
-        listview.setAdapter(adapter);
+        listview.setAdapter(GAGadapter);
         setContentView(listview);
         requestData();
         setListeners();
