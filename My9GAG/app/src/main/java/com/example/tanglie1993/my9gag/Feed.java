@@ -37,7 +37,9 @@ public class Feed {
         public String getPage() {
             return paging.next;
         }
+
     }
+
 
     private class Paging {
         public String next;

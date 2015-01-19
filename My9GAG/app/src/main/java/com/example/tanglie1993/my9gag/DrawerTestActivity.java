@@ -44,11 +44,9 @@ public class DrawerTestActivity extends ActionBarActivity
 
     ListView contentListview;
 
-    List[] commentList;
+    ArrayList[] feedsList;
 
-    List[] largeImageList;
-
-    String[] next;
+    ArrayList[] nextList;
 
     String[] categoriesList;
 
@@ -65,16 +63,14 @@ public class DrawerTestActivity extends ActionBarActivity
 
         categoriesList=getResources().getStringArray(R.array.categories);
         currentCategory=0;
-        next=new String[categoriesList.length];
-        Arrays.fill(next, "0");
-
-        commentList=new ArrayList[categoriesList.length];
-        largeImageList=new ArrayList[categoriesList.length];
-        for(int i=0;i<categoriesList.length;i++){
-            commentList[i]=new ArrayList<String>();
-            largeImageList[i]=new ArrayList<String>();
+        feedsList=new ArrayList[categoriesList.length];
+        for(int i=0;i<categoriesList.length; i++){
+            feedsList[i]=new ArrayList<Feed>();
         }
-
+        nextList=new ArrayList[categoriesList.length];
+        for(int i=0;i<categoriesList.length; i++){
+            nextList[i]=new ArrayList<String>();
+        }
         requestData(0);
 
     }
@@ -110,29 +106,28 @@ public class DrawerTestActivity extends ActionBarActivity
         mDrawerList.setFocusableInTouchMode(false);
     }
 
-    private void requestData(int position){
+    private void requestData(final int position){
         final int pos=position;
         RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://infinigag-us.aws.af.cm/" + categoriesList[position] +"/" + next[position],  new Response.Listener<String>() {
+        String next="0";
+        if(nextList[position].size()>0){
+            next=(String) nextList[position].get(nextList[position].size()-1);
+        }
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://infinigag-us.aws.af.cm/" + categoriesList[position] +"/" + next,  new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
                 Gson mGson = new Gson();
                 Feed.FeedRequestData frd = mGson.fromJson(response, Feed.FeedRequestData.class);
-                next[pos]=frd.getPage();
+                String next=frd.getPage();
 
                 for(Feed feed : frd.data){
-                    commentList[pos].add(feed.caption);
-                    largeImageList[pos].add(feed.images.large);
+                    nextList[position].add(next);
+                    feedsList[position].add(feed);
                     System.out.println(feed.caption);
                 }
 
-                String[] titles=new String[commentList[pos].size()];
-                for(int i=0;i<titles.length;i++){
-                    titles[i]=(String) commentList[pos].get(i);
-                }
-                ArrayAdapter myAdapter=new ArrayAdapter<String>(getApplicationContext(),
-                        R.layout.array_list_view_layout, titles);
+                FeedsAdapter myAdapter=new FeedsAdapter(getApplicationContext(),feedsList[position]);
                 AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(myAdapter);
                 animationAdapter.setAbsListView(contentListview);
                 contentListview.setAdapter(animationAdapter);
@@ -157,7 +152,8 @@ public class DrawerTestActivity extends ActionBarActivity
                             public void onItemClick(AdapterView adapterView, View view,int arg2, long arg3)
                             {
                                 int selectedPosition = arg2;
-                                String imageurl = (String) largeImageList[currentCategory].get(selectedPosition);
+                                Feed feed=(Feed) feedsList[currentCategory].get(selectedPosition);
+                                String imageurl = feed.images.large;
                                 Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
                                 intent.putExtra("imageurl",imageurl);
                                 System.out.println("selectedPosition:"+selectedPosition);
