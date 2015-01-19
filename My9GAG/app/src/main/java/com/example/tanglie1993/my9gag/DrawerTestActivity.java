@@ -85,7 +85,7 @@ public class DrawerTestActivity extends ActionBarActivity
 
         mDrawerList= (ListView) findViewById(R.id.left_drawer);
 
-       final String[] category = getResources().getStringArray(R.array.categories);
+        final String[] category = getResources().getStringArray(R.array.categories);
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,

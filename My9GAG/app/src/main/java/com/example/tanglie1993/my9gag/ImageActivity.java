@@ -25,10 +25,13 @@ public class ImageActivity extends ActionBarActivity {
 
     ArrayAdapter<String> adapter;
 
+    RequestQueue newRequestQueue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
+        newRequestQueue = Volley.newRequestQueue(ImageActivity.this);
         setAdapter();
         requestData();
 
@@ -61,7 +64,7 @@ public class ImageActivity extends ActionBarActivity {
     private void requestData(){
         imageView= (ImageView) findViewById(R.id.imageView);
         Bundle bundle = getIntent().getExtras();
-        RequestQueue newRequestQueue = Volley.newRequestQueue(ImageActivity.this);
+
         ImageRequest imageRequest = new ImageRequest((String) bundle.get("imageurl"),
                 new Response.Listener<Bitmap>()
                 {
