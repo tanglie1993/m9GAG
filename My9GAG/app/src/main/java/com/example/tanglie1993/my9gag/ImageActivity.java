@@ -1,10 +1,13 @@
 package com.example.tanglie1993.my9gag;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -72,6 +75,13 @@ public class ImageActivity extends ActionBarActivity {
                     public void onResponse(Bitmap response)
                     {
                         imageView.setImageBitmap(response);
+                        LayoutParams para=imageView.getLayoutParams();
+                        WindowManager wm = (WindowManager) getApplicationContext()
+                                .getSystemService(Context.WINDOW_SERVICE);
+
+                        para.height = wm.getDefaultDisplay().getHeight();
+                        para.width = wm.getDefaultDisplay().getWidth();
+                        imageView.setLayoutParams(para);
 
                         PhotoViewAttacher mAttacher = new PhotoViewAttacher(imageView);
                     }
