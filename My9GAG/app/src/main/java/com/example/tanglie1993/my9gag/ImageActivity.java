@@ -34,6 +34,7 @@ public class ImageActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
+        getWindow().setBackgroundDrawableResource(R.drawable.background);
         newRequestQueue = Volley.newRequestQueue(ImageActivity.this);
         setAdapter();
         requestData();
