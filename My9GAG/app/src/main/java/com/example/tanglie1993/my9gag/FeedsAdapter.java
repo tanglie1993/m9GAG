@@ -1,7 +1,6 @@
 package com.example.tanglie1993.my9gag;
 
 import android.graphics.Bitmap;
-import android.view.WindowManager;
 import android.widget.Adapter;
 
 /**
@@ -88,11 +87,16 @@ public class FeedsAdapter extends BaseAdapter
                         @Override
                         public void onResponse(Bitmap response)
                         {
+<<<<<<< HEAD
                             ViewGroup.LayoutParams para=iv.getLayoutParams();
                             WindowManager wm = (WindowManager) context.
                                     getSystemService(Context.WINDOW_SERVICE);
+
+                            para.height = wm.getDefaultDisplay().getWidth()/response.getWidth()*response.getHeight();
                             para.width = wm.getDefaultDisplay().getWidth();
                             iv.setLayoutParams(para);
+=======
+>>>>>>> parent of edd05f1... 添加背景图片
                             iv.setImageBitmap(response);
 
                         }

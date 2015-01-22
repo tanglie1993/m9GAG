@@ -1,0 +1,115 @@
+[33mcommit 4db83fa56b11ff62b77fc16574c6641d755bc7a9[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Thu Jan 22 20:56:31 2015 +0800
+
+    实现下拉自动刷新效果
+    
+    但是怎样才能让它不完全重新载入呢？
+
+[33mcommit c9bfe8c389800a1bdfbd30a294a73a03f1654b04[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Thu Jan 22 18:03:42 2015 +0800
+
+    尝试revert
+
+[33mcommit 992b21aac2cb38931eaacd89fd73496bb10ba056[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Thu Jan 22 18:00:17 2015 +0800
+
+    添加pulltorefreshview
+    
+    但还运行不起来，试试revert.
+
+[33mcommit edd05f11d44b4aef60c9f8ace9b8b4ac93beb66d[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Thu Jan 22 01:08:58 2015 +0800
+
+    添加背景图片
+    
+    不知道为什么，不能在adapter里缩放图片。
+
+[33mcommit de248b37ef3cecac01278c2eb48bf24027c2edd6[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Wed Jan 21 23:33:30 2015 +0800
+
+    调整图片大小
+    
+    可惜做到这一步，服务器似乎挂掉了……明天再来看看。
+
+[33mcommit 81524cb2fdf47da44b0951654a5354fd5a376f26[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Tue Jan 20 01:00:03 2015 +0800
+
+    实现自定义adapter的使用
+
+[33mcommit 71310032f699fc82db7c3cebac9013d9141f662f[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Mon Jan 19 23:44:51 2015 +0800
+
+    增加自定义adapter
+    
+    但尚未投入使用，先备份。
+
+[33mcommit b583c0b45081d7288c408ac5f8ac29c5f8115568[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Mon Jan 19 22:30:36 2015 +0800
+
+    实现添加时的动画效果
+
+[33mcommit fc2f4dc5b8d09dd1f67c77086b10a6e6be2ebdbf[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Mon Jan 19 21:02:09 2015 +0800
+
+    添加animationadapter
+    
+    自己实现了一个，但尚未投入使用。暂且备份。
+
+[33mcommit 1772f1abe682689456d671d4ad49e88b299aed0a[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Sun Jan 18 22:59:52 2015 +0800
+
+    添加“加载更多”功能
+
+[33mcommit d4f9f59ace9fb7eb20d51240085e08b4750578d1[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Sun Jan 18 20:58:32 2015 +0800
+
+    修复点击事件无响应的bug。
+    
+    原来是layout文件写错了。所有的控件都要放进drawerlayout里面才对。
+
+[33mcommit cd74d3f54563d66bfe7b45f4ae61882d5085f1c4[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Sun Jan 18 18:00:27 2015 +0800
+
+    实现list和左侧拉出抽屉的结合，并能切换category
+    
+    但是list的onclicklistener完全不能用……不知道为什么。
+
+[33mcommit 59f0e02f2815c55f1e9fb6b7d6cbc979f373cb81[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Sun Jan 18 00:46:54 2015 +0800
+
+    添加drawerlist
+
+[33mcommit 2ebfb9d73388a754acd05bb25bddfcb84f0f373c[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Thu Jan 15 22:06:37 2015 +0800
+
+    增加了可放大缩小图片的功能
+    
+    可是我自己导出的jar包用不了，不知道为什么。
+
+[33mcommit c6214286db7cc31deb4c608312f75f782270b939[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Thu Jan 15 17:42:31 2015 +0800
+
+    initial commit
+    
+    包含两个activity，能把hot的前几条内容显示在一个listView里面，并在点击后启动一个新的Activity显示图片。
+
+[33mcommit 1a8ae478625518e39cc07555c656d5e8eadc1ed6[m
+Author: tanglie1993 <tanglie23@163.com>
+Date:   Thu Jan 15 17:38:47 2015 +0800
+
+    :confetti_ball: Added .gitattributes & .gitignore files
