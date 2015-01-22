@@ -59,6 +59,10 @@ public class DrawerTestActivity extends ActionBarActivity
 
     RequestQueue mQueue;
 
+    FeedsAdapter myAdapter;
+
+    AlphaInAnimationAdapter animationAdapter;
+
     int currentCategory;
 
     @Override
@@ -66,28 +70,18 @@ public class DrawerTestActivity extends ActionBarActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer_test);
-
         initDrawerListView();
-        contentListview=(ListView) findViewById(R.id.testListView);
-        mQueue = Volley.newRequestQueue(getApplicationContext());
-        categoriesList=getResources().getStringArray(R.array.categories);
-        currentCategory=0;
-        feedsList=new ArrayList[categoriesList.length];
-        for(int i=0;i<categoriesList.length; i++){
-            feedsList[i]=new ArrayList<Feed>();
-        }
-        nextList=new ArrayList[categoriesList.length];
-        for(int i=0;i<categoriesList.length; i++){
-            nextList[i]=new ArrayList<String>();
-        }
-        requestData(0);
-
+        initFeedsListView();
+        requestData(currentCategory);
     }
 
     private void initDrawerListView()
     {
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mQueue = Volley.newRequestQueue(getApplicationContext());
 
+        categoriesList=getResources().getStringArray(R.array.categories);
+        currentCategory=0;
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList= (ListView) findViewById(R.id.left_drawer);
 
         final String[] category = getResources().getStringArray(R.array.categories);
@@ -107,12 +101,42 @@ public class DrawerTestActivity extends ActionBarActivity
                 // Highlight the selected item, update the title, and close the
                 // drawer
                 System.out.println("" + category[position]);
-                currentCategory=position;
-                requestData(position);
+                if(position!=currentCategory){
+                    switchList(position);
+                    currentCategory=position;
+                    if(feedsList[position].size()==0){
+                        requestData(position);
+                    }
+                }
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
         mDrawerList.setFocusableInTouchMode(false);
+    }
+
+    private void switchList(int position){
+        myAdapter=new FeedsAdapter(getApplicationContext(),feedsList[position]);
+        animationAdapter = new AlphaInAnimationAdapter(myAdapter);
+        animationAdapter.setAbsListView(contentListview);
+        contentListview.setAdapter(animationAdapter);
+    }
+
+    private void initFeedsListView(){
+
+        contentListview=(ListView) findViewById(R.id.testListView);
+        feedsList=new ArrayList[categoriesList.length];
+        for(int i=0;i<categoriesList.length; i++){
+            feedsList[i]=new ArrayList<Feed>();
+        }
+        nextList=new ArrayList[categoriesList.length];
+        for(int i=0;i<categoriesList.length; i++){
+            nextList[i]=new ArrayList<String>();
+        }
+        myAdapter=new FeedsAdapter(getApplicationContext(),feedsList[currentCategory]);
+        animationAdapter = new AlphaInAnimationAdapter(myAdapter);
+        animationAdapter.setAbsListView(contentListview);
+        contentListview.setAdapter(animationAdapter);
+        setListeners();
     }
 
     private void requestData(final int position){
@@ -135,13 +159,10 @@ public class DrawerTestActivity extends ActionBarActivity
                     feedsList[position].add(feed);
                     System.out.println(feed.caption);
                 }
-
-                FeedsAdapter myAdapter=new FeedsAdapter(getApplicationContext(),feedsList[position]);
-                AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter(myAdapter);
+                myAdapter=new FeedsAdapter(getApplicationContext(),feedsList[position]);
+                animationAdapter = new AlphaInAnimationAdapter(myAdapter);
                 animationAdapter.setAbsListView(contentListview);
                 contentListview.setAdapter(animationAdapter);
-                setListeners();
-
             }
         }, new Response.ErrorListener() {
             @Override
