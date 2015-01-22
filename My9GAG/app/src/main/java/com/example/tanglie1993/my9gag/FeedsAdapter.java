@@ -91,6 +91,8 @@ public class FeedsAdapter extends BaseAdapter
                             ViewGroup.LayoutParams para=iv.getLayoutParams();
                             WindowManager wm = (WindowManager) context.
                                     getSystemService(Context.WINDOW_SERVICE);
+
+                            para.height = wm.getDefaultDisplay().getWidth()/response.getWidth()*response.getHeight();
                             para.width = wm.getDefaultDisplay().getWidth();
                             iv.setLayoutParams(para);
                             iv.setImageBitmap(response);

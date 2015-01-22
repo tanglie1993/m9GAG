@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +29,8 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import java.util.ArrayList;
@@ -40,6 +43,9 @@ public class DrawerTestActivity extends ActionBarActivity
 {
 
     private DrawerLayout mDrawerLayout;
+
+
+
     private ListView mDrawerList;
 
     ListView contentListview;
@@ -50,6 +56,8 @@ public class DrawerTestActivity extends ActionBarActivity
 
     String[] categoriesList;
 
+    RequestQueue mQueue;
+
     int currentCategory;
 
     @Override
@@ -59,8 +67,9 @@ public class DrawerTestActivity extends ActionBarActivity
         setContentView(R.layout.activity_drawer_test);
 
         initDrawerListView();
+        initSwipeToRefreshLayout();
         contentListview=(ListView) findViewById(R.id.testListView);
-
+        mQueue = Volley.newRequestQueue(getApplicationContext());
         categoriesList=getResources().getStringArray(R.array.categories);
         currentCategory=0;
         feedsList=new ArrayList[categoriesList.length];
@@ -108,7 +117,7 @@ public class DrawerTestActivity extends ActionBarActivity
 
     private void requestData(final int position){
         final int pos=position;
-        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
+
         String next="0";
         if(nextList[position].size()>0){
             next=(String) nextList[position].get(nextList[position].size()-1);
@@ -161,6 +170,33 @@ public class DrawerTestActivity extends ActionBarActivity
                             }
                         }
                 );
+    }
+
+    private void initSwipeToRefreshLayout(){
+
+        final PullToRefreshListView mPullRefreshListView = (PullToRefreshListView) findViewById(R.id.testListView);
+        mPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                mPullRefreshListView.setRefreshing(true);
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://infinigag-us.aws.af.cm/" + "hot" +"/" + "0",  new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        System.out.println(response);
+                        setTitle("xxx");
+                        mPullRefreshListView.setRefreshing(false);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        setTitle("yyy");
+                        mPullRefreshListView.setRefreshing(false);
+                        error.printStackTrace();
+                    }
+                }) {};
+                mQueue.add(stringRequest);
+            }
+        });
     }
 
     @Override
