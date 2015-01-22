@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -156,20 +157,33 @@ public class DrawerTestActivity extends ActionBarActivity
     private void setListeners(){
         contentListview.setOnItemClickListener
                 (
-                        new AdapterView.OnItemClickListener()
-                        {
-                            public void onItemClick(AdapterView adapterView, View view,int arg2, long arg3)
-                            {
+                        new AdapterView.OnItemClickListener() {
+                            public void onItemClick(AdapterView adapterView, View view, int arg2, long arg3) {
                                 int selectedPosition = arg2;
-                                Feed feed=(Feed) feedsList[currentCategory].get(selectedPosition);
+                                Feed feed = (Feed) feedsList[currentCategory].get(selectedPosition);
                                 String imageurl = feed.images.large;
                                 Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
-                                intent.putExtra("imageurl",imageurl);
-                                System.out.println("selectedPosition:"+selectedPosition);
+                                intent.putExtra("imageurl", imageurl);
+                                System.out.println("selectedPosition:" + selectedPosition);
                                 startActivity(intent);
                             }
                         }
                 );
+        contentListview.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                //Check if the last view is visible
+                if (++firstVisibleItem + visibleItemCount > totalItemCount) {
+                    requestData(currentCategory);
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState){
+                //TODO
+            }
+        });
     }
 
     private void initSwipeToRefreshLayout(){
