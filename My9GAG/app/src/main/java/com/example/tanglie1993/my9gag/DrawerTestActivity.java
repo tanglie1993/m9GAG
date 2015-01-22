@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -161,6 +162,22 @@ public class DrawerTestActivity extends ActionBarActivity
                             }
                         }
                 );
+        contentListview.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                //Check if the last view is visible
+                if (++firstVisibleItem + visibleItemCount > totalItemCount) {
+                    requestData(currentCategory);
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState){
+                //TODO
+            }
+
+        });
     }
 
     @Override
