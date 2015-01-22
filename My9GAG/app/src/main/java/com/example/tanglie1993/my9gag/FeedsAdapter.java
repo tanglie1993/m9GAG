@@ -1,6 +1,7 @@
 package com.example.tanglie1993.my9gag;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.view.WindowManager;
 import android.widget.Adapter;
 
@@ -88,14 +89,22 @@ public class FeedsAdapter extends BaseAdapter
                         @Override
                         public void onResponse(Bitmap response)
                         {
-                            ViewGroup.LayoutParams para=iv.getLayoutParams();
+
                             WindowManager wm = (WindowManager) context.
                                     getSystemService(Context.WINDOW_SERVICE);
 
-                            para.height = wm.getDefaultDisplay().getWidth()/response.getWidth()*response.getHeight();
-                            para.width = wm.getDefaultDisplay().getWidth();
-                            iv.setLayoutParams(para);
-                            iv.setImageBitmap(response);
+                            int screenWidth = wm.getDefaultDisplay().getWidth();
+                            float scaleWidth = ((float) screenWidth ) / response.getWidth();
+                            int picHeight=Math.round(200/scaleWidth);
+                            if(response.getHeight()<picHeight){
+                                picHeight=response.getHeight();
+                            }
+
+                            Matrix matrix = new Matrix();
+                            matrix.postScale(scaleWidth, scaleWidth);
+                            Bitmap picNewRes = Bitmap.createBitmap(response, 0, 0, response.getWidth(), picHeight, matrix, true);
+
+                            iv.setImageBitmap(picNewRes);
 
                         }
                     }, 0, 0, Bitmap.Config.RGB_565, null);

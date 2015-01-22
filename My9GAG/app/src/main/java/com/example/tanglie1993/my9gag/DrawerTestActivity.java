@@ -26,28 +26,19 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class DrawerTestActivity extends ActionBarActivity
 {
 
-    private DrawerLayout mDrawerLayout;
+    DrawerLayout mDrawerLayout;
 
-
-
-    private ListView mDrawerList;
+    ListView mDrawerList;
 
     ListView contentListview;
 
