@@ -68,7 +68,6 @@ public class DrawerTestActivity extends ActionBarActivity
         setContentView(R.layout.activity_drawer_test);
 
         initDrawerListView();
-        initSwipeToRefreshLayout();
         contentListview=(ListView) findViewById(R.id.testListView);
         mQueue = Volley.newRequestQueue(getApplicationContext());
         categoriesList=getResources().getStringArray(R.array.categories);
@@ -183,37 +182,6 @@ public class DrawerTestActivity extends ActionBarActivity
             public void onScrollStateChanged(AbsListView view, int scrollState){
                 //TODO
             }
-<<<<<<< HEAD
-
-=======
-        });
-    }
-
-    private void initSwipeToRefreshLayout(){
-
-        final PullToRefreshListView mPullRefreshListView = (PullToRefreshListView) findViewById(R.id.testListView);
-        mPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
-            @Override
-            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                mPullRefreshListView.setRefreshing(true);
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://infinigag-us.aws.af.cm/" + "hot" +"/" + "0",  new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        System.out.println(response);
-                        setTitle("xxx");
-                        mPullRefreshListView.setRefreshing(false);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        setTitle("yyy");
-                        mPullRefreshListView.setRefreshing(false);
-                        error.printStackTrace();
-                    }
-                }) {};
-                mQueue.add(stringRequest);
-            }
->>>>>>> origin/master
         });
     }
 
