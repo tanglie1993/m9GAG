@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -33,6 +34,8 @@ import  uk.co.senab.photoview.PhotoViewAttacher;
 
 public class ImageActivity extends ActionBarActivity {
 
+    TextView tv;
+
     ImageView imageView;
 
     ListView listview;
@@ -40,6 +43,8 @@ public class ImageActivity extends ActionBarActivity {
     ArrayAdapter<String> adapter;
 
     RequestQueue newRequestQueue;
+
+    PhotoViewAttacher mAttacher;
 
     String ALBUM_PATH = Environment.getExternalStorageDirectory() + "/download_test/";
 
@@ -50,7 +55,8 @@ public class ImageActivity extends ActionBarActivity {
         newRequestQueue = Volley.newRequestQueue(ImageActivity.this);
         setAdapter();
         requestData();
-        registerForContextMenu(imageView);
+        tv=(TextView)findViewById(R.id.testTextView);
+        registerForContextMenu(tv);
 
 
     }
@@ -143,7 +149,14 @@ public class ImageActivity extends ActionBarActivity {
                         para.width = wm.getDefaultDisplay().getWidth();
                         imageView.setLayoutParams(para);
 
-                        PhotoViewAttacher mAttacher = new PhotoViewAttacher(imageView);
+                        mAttacher = new PhotoViewAttacher(imageView);
+                        mAttacher.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View view) {
+                                openOptionsMenu();
+                                return false;
+                            }
+                        });
                     }
                 }, 0, 0, Bitmap.Config.RGB_565, null);
         newRequestQueue.add(imageRequest);

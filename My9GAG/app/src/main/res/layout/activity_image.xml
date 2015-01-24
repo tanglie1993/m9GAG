@@ -11,11 +11,20 @@ android:layout_height="match_parent">
     android:layout_height="match_parent"
 
     >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="xxxx"
+        android:textSize="@dimen/abc_text_size_large_material"
+        android:id="@+id/testTextView"/>
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView" />
-    </FrameLayout>
+        android:id="@+id/imageView"
+        />
+</FrameLayout>
 
 <!-- The navigation drawer -->
 <ListView android:id="@+id/left_drawer"
