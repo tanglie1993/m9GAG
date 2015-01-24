@@ -75,7 +75,7 @@ public class ImageActivity extends ActionBarActivity {
             BitmapDrawable bd = (BitmapDrawable) imageView.getDrawable();
             Bitmap bm = bd.getBitmap();
             try{
-                saveFile(bm, "9GAGImages");
+                saveFile(bm, (String) getIntent().getExtras().get("id")+".JPEG");
             }catch(IOException e){
                 e.printStackTrace();
             }
@@ -101,7 +101,7 @@ public class ImageActivity extends ActionBarActivity {
                 BitmapDrawable bd = (BitmapDrawable) imageView.getDrawable();
                 Bitmap bm = bd.getBitmap();
                 try{
-                    saveFile(bm, "9GAGImages");
+                    saveFile(bm, (String) getIntent().getExtras().get("id"));
                 }catch(IOException e){
                     e.printStackTrace();
                 }

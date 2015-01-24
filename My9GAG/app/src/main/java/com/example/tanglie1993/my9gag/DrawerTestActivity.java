@@ -175,6 +175,7 @@ public class DrawerTestActivity extends ActionBarActivity
                                 String imageurl = feed.images.large;
                                 Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
                                 intent.putExtra("imageurl", imageurl);
+                                intent.putExtra("id", feed.id);
                                 System.out.println("selectedPosition:" + selectedPosition);
                                 startActivity(intent);
                             }
