@@ -2,12 +2,18 @@ package com.example.tanglie1993.my9gag;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -16,6 +22,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import  uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -30,6 +41,8 @@ public class ImageActivity extends ActionBarActivity {
 
     RequestQueue newRequestQueue;
 
+    String ALBUM_PATH = Environment.getExternalStorageDirectory() + "/download_test/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +50,7 @@ public class ImageActivity extends ActionBarActivity {
         newRequestQueue = Volley.newRequestQueue(ImageActivity.this);
         setAdapter();
         requestData();
+        registerForContextMenu(imageView);
 
 
     }
@@ -58,10 +72,56 @@ public class ImageActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            BitmapDrawable bd = (BitmapDrawable) imageView.getDrawable();
+            Bitmap bm = bd.getBitmap();
+            try{
+                saveFile(bm, "9GAGImages");
+            }catch(IOException e){
+                e.printStackTrace();
+            }
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                   ContextMenu.ContextMenuInfo menuInfo) {
+
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.menu_image_context, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.saveImage:
+                BitmapDrawable bd = (BitmapDrawable) imageView.getDrawable();
+                Bitmap bm = bd.getBitmap();
+                try{
+                    saveFile(bm, "9GAGImages");
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public void saveFile(Bitmap bm, String fileName) throws IOException {
+        File dirFile = new File(ALBUM_PATH);
+        if(!dirFile.exists()){
+            dirFile.mkdir();
+        }
+        File myCaptureFile = new File(ALBUM_PATH + fileName);
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
+        bm.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+        bos.flush();
+        bos.close();
     }
 
     private void requestData(){
