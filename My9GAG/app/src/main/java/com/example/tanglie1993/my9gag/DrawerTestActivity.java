@@ -1,8 +1,18 @@
 package com.example.tanglie1993.my9gag;
 
 import android.app.ActionBar;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -11,6 +21,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -26,11 +37,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 public class DrawerTestActivity extends ActionBarActivity
@@ -42,9 +55,7 @@ public class DrawerTestActivity extends ActionBarActivity
 
     ListView contentListview;
 
-    ArrayList[] feedsList;
-
-    ArrayList[] nextList;
+    ArrayList[] dataItemList;
 
     String[] categoriesList;
 
@@ -55,6 +66,8 @@ public class DrawerTestActivity extends ActionBarActivity
     AlphaInAnimationAdapter animationAdapter;
 
     int currentCategory;
+
+    public static final Uri CONTENT_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider");
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -95,7 +108,7 @@ public class DrawerTestActivity extends ActionBarActivity
                 if(position!=currentCategory){
                     switchList(position);
                     currentCategory=position;
-                    if(feedsList[position].size()==0){
+                    if(dataItemList[position].size()==0){
                         requestData(position);
                     }
                 }
@@ -106,7 +119,7 @@ public class DrawerTestActivity extends ActionBarActivity
     }
 
     private void switchList(int position){
-        myAdapter=new FeedsAdapter(getApplicationContext(),feedsList[position]);
+        myAdapter=new FeedsAdapter(getApplicationContext(),dataItemList[position]);
         animationAdapter = new AlphaInAnimationAdapter(myAdapter);
         animationAdapter.setAbsListView(contentListview);
         contentListview.setAdapter(animationAdapter);
@@ -115,15 +128,11 @@ public class DrawerTestActivity extends ActionBarActivity
     private void initFeedsListView(){
 
         contentListview=(ListView) findViewById(R.id.testListView);
-        feedsList=new ArrayList[categoriesList.length];
+        dataItemList=new ArrayList[categoriesList.length];
         for(int i=0;i<categoriesList.length; i++){
-            feedsList[i]=new ArrayList<Feed>();
+            dataItemList[i]=new ArrayList<DataItem>();
         }
-        nextList=new ArrayList[categoriesList.length];
-        for(int i=0;i<categoriesList.length; i++){
-            nextList[i]=new ArrayList<String>();
-        }
-        myAdapter=new FeedsAdapter(getApplicationContext(),feedsList[currentCategory]);
+        myAdapter=new FeedsAdapter(getApplicationContext(),dataItemList[currentCategory]);
         animationAdapter = new AlphaInAnimationAdapter(myAdapter);
         animationAdapter.setAbsListView(contentListview);
         contentListview.setAdapter(animationAdapter);
@@ -134,26 +143,47 @@ public class DrawerTestActivity extends ActionBarActivity
         final int pos=position;
 
         String next="0";
-        if(nextList[position].size()>0){
-            next=(String) nextList[position].get(nextList[position].size()-1);
+        if(dataItemList[position].size()>0){
+            DataItem item=(DataItem) dataItemList[position].get(dataItemList[position].size()-1);
+            next=item.next;
+
         }
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://infinigag-us.aws.af.cm/" + categoriesList[position] +"/" + next,  new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-
                 Gson mGson = new Gson();
                 Feed.FeedRequestData frd = mGson.fromJson(response, Feed.FeedRequestData.class);
                 String next=frd.getPage();
 
                 for(Feed feed : frd.data){
-                    nextList[position].add(next);
-                    feedsList[position].add(feed);
+                    final DataItem item=new DataItem();
+                    item.next=next;
+                    item.caption=feed.caption;
+                    item.category=position;
+                    item.id=feed.id;
+                    Resources res=getResources();
+                    Bitmap green= BitmapFactory.decodeResource(res, R.drawable.green);
+                    item.largeImage= green;
+                    dataItemList[position].add(item);
+                    myAdapter.notifyDataSetChanged();
+
+                    final int positionMarker=dataItemList[position].size()-1;
+                    ImageRequest imageRequest = new ImageRequest(feed.images.large,
+                            new Response.Listener<Bitmap>()
+                            {
+                                @Override
+                                public void onResponse(Bitmap response)
+                                {
+                                    DataItem updateItem= (DataItem) dataItemList[position].get(positionMarker);
+                                    updateItem.largeImage=response;
+                                    myAdapter.notifyDataSetChanged();
+                                }
+                            }, 0, 0, Bitmap.Config.RGB_565, null);
+                    mQueue.add(imageRequest);
+
                     System.out.println(feed.caption);
                 }
-                myAdapter=new FeedsAdapter(getApplicationContext(),feedsList[position]);
-                animationAdapter = new AlphaInAnimationAdapter(myAdapter);
-                animationAdapter.setAbsListView(contentListview);
-                contentListview.setAdapter(animationAdapter);
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -171,12 +201,15 @@ public class DrawerTestActivity extends ActionBarActivity
                         new AdapterView.OnItemClickListener() {
                             public void onItemClick(AdapterView adapterView, View view, int arg2, long arg3) {
                                 int selectedPosition = arg2;
-                                Feed feed = (Feed) feedsList[currentCategory].get(selectedPosition);
-                                String imageurl = feed.images.large;
+                                DataItem item = (DataItem) dataItemList[currentCategory].get(selectedPosition);
+                                Bitmap image = item.largeImage;
                                 Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
-                                intent.putExtra("imageurl", imageurl);
-                                intent.putExtra("id", feed.id);
-                                System.out.println("selectedPosition:" + selectedPosition);
+                                intent.putExtra("image",image);
+                                intent.putExtra("id", item.id);
+                                intent.putExtra("caption",item.caption);
+                                intent.putExtra("category",item.category);
+                                System.out.println("selectedPosition:" + selectedPosition+"id:"+item.id+"caption:"+item.caption+"category"+item.category);
+
                                 startActivity(intent);
                             }
                         }

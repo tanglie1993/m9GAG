@@ -27,6 +27,13 @@
             android:name=".DrawerTestActivity"
             android:label="@string/title_activity_drawer_test" >
         </activity>
+
+        <provider
+            android:name=".FeedsProvider"
+            android:authorities="com.example.tanglie1993.FeedsProvider"
+            android:enabled="true"
+            android:exported="true" >
+        </provider>
     </application>
 
 </manifest>

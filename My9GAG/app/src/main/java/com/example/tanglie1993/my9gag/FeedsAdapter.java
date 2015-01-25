@@ -34,12 +34,12 @@ public class FeedsAdapter extends BaseAdapter
 
     private LayoutInflater layoutInflater;
 
-    private List<Feed> list;
+    private List<DataItem> list;
 
     private RequestQueue newRequestQueue;
 
     //构造方法，参数list传递的就是这一组数据的信息
-    public FeedsAdapter(Context context, List<Feed> list)
+    public FeedsAdapter(Context context, List<DataItem> list)
     {
         this.context = context;
 
@@ -83,32 +83,23 @@ public class FeedsAdapter extends BaseAdapter
 
         //从list对象中为子组件赋值
         tv1.setText(list.get(position).caption);
-        ImageRequest imageRequest = new ImageRequest(list.get(position).images.large,
-                    new Response.Listener<Bitmap>()
-                    {
-                        @Override
-                        public void onResponse(Bitmap response)
-                        {
+        WindowManager wm = (WindowManager) context.
+            getSystemService(Context.WINDOW_SERVICE);
 
-                            WindowManager wm = (WindowManager) context.
-                                    getSystemService(Context.WINDOW_SERVICE);
+        Bitmap bmp=list.get(position).largeImage;
 
-                            int screenWidth = wm.getDefaultDisplay().getWidth();
-                            float scaleWidth = ((float) screenWidth ) / response.getWidth();
-                            int picHeight=Math.round(200/scaleWidth);
-                            if(response.getHeight()<picHeight){
-                                picHeight=response.getHeight();
-                            }
+        int screenWidth = wm.getDefaultDisplay().getWidth();
+        float scaleWidth = ((float) screenWidth ) /bmp.getWidth();
+        int picHeight=Math.round(500/scaleWidth);
+        if(bmp.getHeight()<picHeight){
+            picHeight=bmp.getHeight();
+        }
 
-                            Matrix matrix = new Matrix();
-                            matrix.postScale(scaleWidth, scaleWidth);
-                            Bitmap picNewRes = Bitmap.createBitmap(response, 0, 0, response.getWidth(), picHeight, matrix, true);
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleWidth);
+        Bitmap picNewRes = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), picHeight, matrix, true);
 
-                            iv.setImageBitmap(picNewRes);
-
-                        }
-                    }, 0, 0, Bitmap.Config.RGB_565, null);
-        newRequestQueue.add(imageRequest);
+        iv.setImageBitmap(picNewRes);
 
         return convertView;
     }

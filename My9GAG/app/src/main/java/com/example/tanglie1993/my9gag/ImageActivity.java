@@ -1,8 +1,11 @@
 package com.example.tanglie1993.my9gag;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -25,6 +28,7 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,13 +38,7 @@ import  uk.co.senab.photoview.PhotoViewAttacher;
 
 public class ImageActivity extends ActionBarActivity {
 
-    TextView tv;
-
     ImageView imageView;
-
-    ListView listview;
-
-    ArrayAdapter<String> adapter;
 
     RequestQueue newRequestQueue;
 
@@ -48,16 +46,13 @@ public class ImageActivity extends ActionBarActivity {
 
     String ALBUM_PATH = Environment.getExternalStorageDirectory() + "/download_test/";
 
+    public static final Uri CONTENT_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
-        newRequestQueue = Volley.newRequestQueue(ImageActivity.this);
-        setAdapter();
-        requestData();
-        tv=(TextView)findViewById(R.id.testTextView);
-        registerForContextMenu(tv);
-
+        setImage();
 
     }
 
@@ -77,45 +72,38 @@ public class ImageActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.save_as_png) {
             BitmapDrawable bd = (BitmapDrawable) imageView.getDrawable();
             Bitmap bm = bd.getBitmap();
             try{
-                saveFile(bm, (String) getIntent().getExtras().get("id")+".JPEG");
+                saveFile(bm, getIntent().getExtras().get("id")+".PNG");
             }catch(IOException e){
                 e.printStackTrace();
             }
             return true;
+        }else if(id == R.id.add_to_favorite){
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            Bundle bundle=getIntent().getExtras();
+            Bitmap bmp=(Bitmap) bundle.get("largeImage");
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+            ContentValues value=new ContentValues();
+            value.put("ID", (String) bundle.get("id"));
+            value.put("LARGE_IMAGE", os.toByteArray());
+            value.put("CAPTION",(String) bundle.get("caption"));
+            value.put("CATEGORY",(String) bundle.get("category"));
+            String projection[]={"ID"};
+            if(getContentResolver().query(CONTENT_URI, projection, "ID="+(String) bundle.get("id"), null, null).getCount()==0){
+                getContentResolver().insert(CONTENT_URI, value);
+                System.out.println("Insertion succeeded.");
+            }
+            else{
+                System.out.println("Insertion failed.");
+            }
+
+
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                   ContextMenu.ContextMenuInfo menuInfo) {
-
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater=getMenuInflater();
-        inflater.inflate(R.menu.menu_image_context, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.saveImage:
-                BitmapDrawable bd = (BitmapDrawable) imageView.getDrawable();
-                Bitmap bm = bd.getBitmap();
-                try{
-                    saveFile(bm, (String) getIntent().getExtras().get("id"));
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
-
-                return true;
-            default:
-                return false;
-        }
     }
 
     public void saveFile(Bitmap bm, String fileName) throws IOException {
@@ -125,50 +113,32 @@ public class ImageActivity extends ActionBarActivity {
         }
         File myCaptureFile = new File(ALBUM_PATH + fileName);
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
-        bm.compress(Bitmap.CompressFormat.JPEG, 80, bos);
+        bm.compress(Bitmap.CompressFormat.PNG, 100, bos);
         bos.flush();
         bos.close();
     }
 
-    private void requestData(){
+    private void setImage(){
         imageView= (ImageView) findViewById(R.id.imageView);
-        Bundle bundle = getIntent().getExtras();
+        imageView.setImageBitmap((Bitmap) getIntent().getExtras().get("image"));
 
-        ImageRequest imageRequest = new ImageRequest((String) bundle.get("imageurl"),
-                new Response.Listener<Bitmap>()
-                {
-                    @Override
-                    public void onResponse(Bitmap response)
-                    {
-                        imageView.setImageBitmap(response);
-                        LayoutParams para=imageView.getLayoutParams();
-                        WindowManager wm = (WindowManager) getApplicationContext()
-                                .getSystemService(Context.WINDOW_SERVICE);
+        LayoutParams para=imageView.getLayoutParams();
+        WindowManager wm = (WindowManager) getApplicationContext()
+                .getSystemService(Context.WINDOW_SERVICE);
 
-                        para.height = wm.getDefaultDisplay().getHeight();
-                        para.width = wm.getDefaultDisplay().getWidth();
-                        imageView.setLayoutParams(para);
+        para.height = wm.getDefaultDisplay().getHeight();
+        para.width = wm.getDefaultDisplay().getWidth();
+        imageView.setLayoutParams(para);
 
-                        mAttacher = new PhotoViewAttacher(imageView);
-                        mAttacher.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View view) {
-                                openOptionsMenu();
-                                return false;
-                            }
-                        });
-                    }
-                }, 0, 0, Bitmap.Config.RGB_565, null);
-        newRequestQueue.add(imageRequest);
+        mAttacher = new PhotoViewAttacher(imageView);
+        mAttacher.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                openOptionsMenu();
+                return false;
+            }
+        });
 
     }
 
-    private void setAdapter(){
-        listview = new ListView(this);
-        listview.findViewById(R.id.left_drawer);
-        adapter = new ArrayAdapter<String>(this,R.layout.array_list_view_layout);
-        adapter.add("hot");
-        adapter.add("new");
-        adapter.add("trend");
-    }
 }
