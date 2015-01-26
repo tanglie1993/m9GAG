@@ -2,6 +2,7 @@ package com.example.tanglie1993.my9gag;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -40,18 +41,19 @@ public class ImageActivity extends ActionBarActivity {
 
     ImageView imageView;
 
-    RequestQueue newRequestQueue;
-
     PhotoViewAttacher mAttacher;
+
+    Bitmap image;
 
     String ALBUM_PATH = Environment.getExternalStorageDirectory() + "/download_test/";
 
-    public static final Uri CONTENT_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider");
+    private DataItem bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
+        getBundle();
         setImage();
 
     }
@@ -73,38 +75,35 @@ public class ImageActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.save_as_png) {
-            BitmapDrawable bd = (BitmapDrawable) imageView.getDrawable();
-            Bitmap bm = bd.getBitmap();
+
             try{
-                saveFile(bm, getIntent().getExtras().get("id")+".PNG");
+                saveFile(image, bundle.id+".PNG");
             }catch(IOException e){
                 e.printStackTrace();
             }
             return true;
         }else if(id == R.id.add_to_favorite){
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            Bundle bundle=getIntent().getExtras();
-            Bitmap bmp=(Bitmap) bundle.get("largeImage");
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
-            ContentValues value=new ContentValues();
-            value.put("ID", (String) bundle.get("id"));
-            value.put("LARGE_IMAGE", os.toByteArray());
-            value.put("CAPTION",(String) bundle.get("caption"));
-            value.put("CATEGORY",(String) bundle.get("category"));
-            String projection[]={"ID"};
-            if(getContentResolver().query(CONTENT_URI, projection, "ID="+(String) bundle.get("id"), null, null).getCount()==0){
-                getContentResolver().insert(CONTENT_URI, value);
+            /*
+            String imageid=bundle.id;
+            String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
+            ContentValues values=new ContentValues();
+            values.put("ID",
+
+            if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ imageid+"'", null, null).getCount()==0){
+                getContentResolver().insert(FeedsProvider.FAVORITES_URI, value);
                 System.out.println("Insertion succeeded.");
             }
             else{
                 System.out.println("Insertion failed.");
             }
+            */
 
 
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     public void saveFile(Bitmap bm, String fileName) throws IOException {
         File dirFile = new File(ALBUM_PATH);
@@ -118,9 +117,28 @@ public class ImageActivity extends ActionBarActivity {
         bos.close();
     }
 
+    private void getBundle(){
+        bundle=new DataItem();
+        String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
+        Cursor c =getContentResolver().query(FeedsProvider.BUNDLE_URI, projection, null, null, null);
+        c.moveToFirst();
+        byte[] bitmapArray=c.getBlob(1);
+        bundle.largeImage=BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+        bundle.id=c.getString(0);
+        bundle.caption=c.getString(2);
+        bundle.category=c.getInt(3);
+        getContentResolver().delete(FeedsProvider.BUNDLE_URI, null, null);
+    }
+
     private void setImage(){
         imageView= (ImageView) findViewById(R.id.imageView);
-        imageView.setImageBitmap((Bitmap) getIntent().getExtras().get("image"));
+        String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
+        Cursor c =getContentResolver().query(FeedsProvider.BUNDLE_URI, projection, null, null, null);
+        c.moveToFirst();
+        byte[] bitmapArray=c.getBlob(0);
+        image=BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+        imageView.setImageBitmap(image);
+
 
         LayoutParams para=imageView.getLayoutParams();
         WindowManager wm = (WindowManager) getApplicationContext()

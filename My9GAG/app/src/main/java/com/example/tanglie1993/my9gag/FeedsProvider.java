@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -16,7 +17,9 @@ import com.google.gson.Gson;
 
 public class FeedsProvider extends ContentProvider {
 
-    public static final String TABLE_NAME = "favorites";
+    public static final String FAVORITES = "favorites";
+
+    public static final String BUNDLE = "bundleData";
 
     public static final String DATABASE_NAME = "FeedsProvider";
 
@@ -24,9 +27,18 @@ public class FeedsProvider extends ContentProvider {
 
     public static final Uri CONTENT_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider");
 
+    public static final Uri BUNDLE_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider/bundleData");
+
+    public static final Uri FAVORITES_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider/favorites");
+
     private DatabaseHelper dbHelper;
 
+    private UriMatcher matcher;
+
     public FeedsProvider() {
+        matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        matcher.addURI("com.example.tanglie1993.FeedsProvider",FAVORITES, 0);
+        matcher.addURI("com.example.tanglie1993.FeedsProvider",BUNDLE, 1);
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -37,14 +49,15 @@ public class FeedsProvider extends ContentProvider {
         @Override
         public void onCreate(SQLiteDatabase db) {
             //创建用于存储数据的表
-            db.execSQL("Create table " + TABLE_NAME + " ( ID TEXT PRIMARY KEY, LARGE_IMAGE BLOB, CAPTION TEXT, CATEGORY INT);");
+            db.execSQL("Create table " + FAVORITES + " ( ID TEXT PRIMARY KEY, LARGE_IMAGE BLOB, CAPTION TEXT, CATEGORY INT);");
+            db.execSQL("Create table " + BUNDLE + " ( ID TEXT PRIMARY KEY, LARGE_IMAGE BLOB, CAPTION TEXT, CATEGORY INT);");
         }
 
 
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS" + TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS" + FAVORITES);
             onCreate(db);
         }
 
@@ -53,8 +66,17 @@ public class FeedsProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Implement this to handle requests to delete one or more rows.
-        throw new UnsupportedOperationException("Not yet implemented");
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        switch (matcher.match(uri)) {
+            case 0:
+                db.delete(FAVORITES, selection, selectionArgs);
+                return 0;
+            case 1:
+                db.delete(BUNDLE, selection, selectionArgs);
+                return 0;
+            default://不匹配
+                return 1;
+        }
     }
 
     @Override
@@ -67,7 +89,17 @@ public class FeedsProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        long rowId = db.insert(TABLE_NAME, null, values);
+        long rowId=0;
+        switch (matcher.match(uri)) {
+            case 0:
+                rowId = db.insert(FAVORITES, null, values);
+                break;
+            case 1:
+                rowId = db.insert(BUNDLE, null, values);
+                break;
+            default://不匹配
+                break;
+        }
         if(rowId > 0){
             Uri insertedUserUri = ContentUris.withAppendedId(CONTENT_URI, rowId);
             getContext().getContentResolver().notifyChange(insertedUserUri, null);
@@ -88,7 +120,17 @@ public class FeedsProvider extends ContentProvider {
                         String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        qb.setTables(TABLE_NAME);
+        switch (matcher.match(uri)) {
+            case 0:
+                qb.setTables(FAVORITES);
+                break;
+            case 1:
+                qb.setTables(BUNDLE);
+                break;
+            default://不匹配
+                break;
+        }
+
         Cursor c = qb.query(db, projection, selection, null, null, null, sortOrder);
         return c;
     }

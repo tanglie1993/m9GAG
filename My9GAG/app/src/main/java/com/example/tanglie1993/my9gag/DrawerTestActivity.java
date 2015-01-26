@@ -67,8 +67,6 @@ public class DrawerTestActivity extends ActionBarActivity
 
     int currentCategory;
 
-    public static final Uri CONTENT_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider");
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -202,14 +200,24 @@ public class DrawerTestActivity extends ActionBarActivity
                             public void onItemClick(AdapterView adapterView, View view, int arg2, long arg3) {
                                 int selectedPosition = arg2;
                                 DataItem item = (DataItem) dataItemList[currentCategory].get(selectedPosition);
-                                Bitmap image = item.largeImage;
                                 Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
-                                intent.putExtra("image",image);
-                                intent.putExtra("id", item.id);
-                                intent.putExtra("caption",item.caption);
-                                intent.putExtra("category",item.category);
-                                System.out.println("selectedPosition:" + selectedPosition+"id:"+item.id+"caption:"+item.caption+"category"+item.category);
 
+                                ContentValues values=new ContentValues();
+                                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                                Bitmap bmp = item.largeImage;
+                                bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+                                values.put("ID",item.id);
+                                values.put("LARGE_IMAGE",os.toByteArray());
+                                values.put("CAPTION",item.caption);
+                                values.put("CATEGORY",item.category);
+                                String projection[]={"ID"};
+                                if(getContentResolver().query(FeedsProvider.BUNDLE_URI, projection, "ID='"+item.id+"'", null, null).getCount()==0){
+                                    getContentResolver().insert(FeedsProvider.BUNDLE_URI, values);
+                                    System.out.println("Insertion succeeded.");
+                                }
+                                else{
+                                    System.out.println("Insertion failed.");
+                                }
                                 startActivity(intent);
                             }
                         }
