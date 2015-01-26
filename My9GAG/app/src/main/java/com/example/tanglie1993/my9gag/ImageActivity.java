@@ -132,11 +132,7 @@ public class ImageActivity extends ActionBarActivity {
 
     private void setImage(){
         imageView= (ImageView) findViewById(R.id.imageView);
-        String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
-        Cursor c =getContentResolver().query(FeedsProvider.BUNDLE_URI, projection, null, null, null);
-        c.moveToFirst();
-        byte[] bitmapArray=c.getBlob(0);
-        image=BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+        image=bundle.largeImage;
         imageView.setImageBitmap(image);
 
 
