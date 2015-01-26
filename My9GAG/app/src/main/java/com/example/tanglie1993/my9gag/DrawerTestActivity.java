@@ -102,6 +102,11 @@ public class DrawerTestActivity extends ActionBarActivity
             {
                 // Highlight the selected item, update the title, and close the
                 // drawer
+                if(position==3){
+                    openFavorites();
+                    mDrawerLayout.closeDrawer(mDrawerList);
+                    return;
+                }
                 System.out.println("" + category[position]);
                 if(position!=currentCategory){
                     switchList(position);
@@ -227,6 +232,9 @@ public class DrawerTestActivity extends ActionBarActivity
             public void onScroll(AbsListView view, int firstVisibleItem,
                                  int visibleItemCount, int totalItemCount) {
                 //Check if the last view is visible
+                if(currentCategory==3){
+                    return;
+                }
                 if (++firstVisibleItem + visibleItemCount > totalItemCount) {
                     requestData(currentCategory);
                 }
@@ -237,6 +245,27 @@ public class DrawerTestActivity extends ActionBarActivity
                 //TODO
             }
         });
+    }
+
+    private void openFavorites(){
+        currentCategory=3;
+        Cursor c=getContentResolver().query(FeedsProvider.FAVORITES_URI, FeedsProvider.COLUMN, null, null, null);
+        dataItemList[currentCategory].clear();
+        switchList(currentCategory);
+        if(c.getCount()==0){
+            return;
+        }
+        c.moveToFirst();
+        do{
+            DataItem item=new DataItem();
+            item.id=c.getString(0);
+            byte[] bitmapArray=c.getBlob(1);
+            item.largeImage=BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+            item.caption=c.getString(2);
+            item.category=c.getInt(3);
+            dataItemList[currentCategory].add(item);
+        }while(c.moveToNext());
+        myAdapter.notifyDataSetChanged();
     }
 
     @Override

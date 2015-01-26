@@ -6,5 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_image">ImageActivity</string>
     <string name="title_activity_drawer_test">DrawerTestActivity</string>
+    <string name="title_activity_favorites">FavoritesActivity</string>
 
 </resources>

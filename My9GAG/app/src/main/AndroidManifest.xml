@@ -34,6 +34,11 @@
             android:enabled="true"
             android:exported="true" >
         </provider>
+
+        <activity
+            android:name=".FavoritesActivity"
+            android:label="@string/title_activity_favorites" >
+        </activity>
     </application>
 
 </manifest>

@@ -31,6 +31,8 @@ public class FeedsProvider extends ContentProvider {
 
     public static final Uri FAVORITES_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider/favorites");
 
+    public static final String[] COLUMN={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
+
     private DatabaseHelper dbHelper;
 
     private UriMatcher matcher;

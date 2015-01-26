@@ -4,6 +4,7 @@
         <item>hot</item>
         <item>trending</item>
         <item>fresh</item>
+        <item>favorites</item>
     </string-array>
     <string-array name="empty"/>
 </resources>

@@ -83,20 +83,23 @@ public class ImageActivity extends ActionBarActivity {
             }
             return true;
         }else if(id == R.id.add_to_favorite){
-            /*
-            String imageid=bundle.id;
-            String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
             ContentValues values=new ContentValues();
-            values.put("ID",
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            Bitmap bmp = bundle.largeImage;
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+            values.put("ID",bundle.id);
+            values.put("LARGE_IMAGE",os.toByteArray());
+            values.put("CAPTION",bundle.caption);
+            values.put("CATEGORY",bundle.category);
+            String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
 
-            if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ imageid+"'", null, null).getCount()==0){
-                getContentResolver().insert(FeedsProvider.FAVORITES_URI, value);
+            if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ bundle.id+"'", null, null).getCount()==0){
+                getContentResolver().insert(FeedsProvider.FAVORITES_URI, values);
                 System.out.println("Insertion succeeded.");
             }
             else{
                 System.out.println("Insertion failed.");
             }
-            */
 
 
         }
