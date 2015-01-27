@@ -74,7 +74,6 @@ public class DrawerTestActivity extends ActionBarActivity
         setContentView(R.layout.activity_drawer_test);
         initDrawerListView();
         initFeedsListView();
-        requestData(currentCategory);
     }
 
     private void initDrawerListView()
@@ -134,9 +133,7 @@ public class DrawerTestActivity extends ActionBarActivity
             dataItemList[i]=new ArrayList<DataItem>();
         }
         myAdapter=new FeedsAdapter(getApplicationContext(),dataItemList[currentCategory]);
-        animationAdapter = new AlphaInAnimationAdapter(myAdapter);
-        animationAdapter.setAbsListView(contentListview);
-        contentListview.setAdapter(animationAdapter);
+        contentListview.setAdapter(myAdapter);
         setListeners();
     }
 
@@ -265,12 +262,6 @@ public class DrawerTestActivity extends ActionBarActivity
             dataItemList[currentCategory].add(item);
         }while(c.moveToNext());
         myAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onStart(){
-        super.onStart();
-        openFavorites();
     }
 
     @Override
