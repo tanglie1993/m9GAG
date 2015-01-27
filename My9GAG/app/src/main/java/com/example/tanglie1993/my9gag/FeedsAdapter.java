@@ -50,6 +50,10 @@ public class FeedsAdapter extends BaseAdapter
         newRequestQueue = Volley.newRequestQueue(context);
     }
 
+    public void updateList(List<DataItem> list){
+        this.list = list;
+    }
+
     //得到总的数量
     public int getCount()
     {

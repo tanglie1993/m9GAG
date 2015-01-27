@@ -122,10 +122,8 @@ public class DrawerTestActivity extends ActionBarActivity
     }
 
     private void switchList(int position){
-        myAdapter=new FeedsAdapter(getApplicationContext(),dataItemList[position]);
-        animationAdapter = new AlphaInAnimationAdapter(myAdapter);
-        animationAdapter.setAbsListView(contentListview);
-        contentListview.setAdapter(animationAdapter);
+        myAdapter.updateList(dataItemList[position]);
+        myAdapter.notifyDataSetChanged();
     }
 
     private void initFeedsListView(){
@@ -206,6 +204,7 @@ public class DrawerTestActivity extends ActionBarActivity
                                 int selectedPosition = arg2;
                                 DataItem item = (DataItem) dataItemList[currentCategory].get(selectedPosition);
                                 Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
+                                intent.putExtra("from",currentCategory);
 
                                 ContentValues values=new ContentValues();
                                 ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -266,6 +265,12 @@ public class DrawerTestActivity extends ActionBarActivity
             dataItemList[currentCategory].add(item);
         }while(c.moveToNext());
         myAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        openFavorites();
     }
 
     @Override

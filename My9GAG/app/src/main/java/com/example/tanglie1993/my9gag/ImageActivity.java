@@ -47,6 +47,8 @@ public class ImageActivity extends ActionBarActivity {
 
     String ALBUM_PATH = Environment.getExternalStorageDirectory() + "/download_test/";
 
+    String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
+
     private DataItem bundle;
 
     @Override
@@ -62,7 +64,12 @@ public class ImageActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_image, menu);
+        if((Integer) getIntent().getExtras().get("from")==3){
+            getMenuInflater().inflate(R.menu.menu_favorites, menu);
+        }else{
+            getMenuInflater().inflate(R.menu.menu_image, menu);
+        }
+
         return true;
     }
 
@@ -91,7 +98,7 @@ public class ImageActivity extends ActionBarActivity {
             values.put("LARGE_IMAGE",os.toByteArray());
             values.put("CAPTION",bundle.caption);
             values.put("CATEGORY",bundle.category);
-            String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
+
 
             if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ bundle.id+"'", null, null).getCount()==0){
                 getContentResolver().insert(FeedsProvider.FAVORITES_URI, values);
@@ -100,8 +107,8 @@ public class ImageActivity extends ActionBarActivity {
             else{
                 System.out.println("Insertion failed.");
             }
-
-
+        }else if(id == R.id.delete_from_favorite){
+            getContentResolver().delete(FeedsProvider.FAVORITES_URI, "ID='"+ bundle.id+"'",null);
         }
 
         return super.onOptionsItemSelected(item);
@@ -118,6 +125,7 @@ public class ImageActivity extends ActionBarActivity {
         bm.compress(Bitmap.CompressFormat.PNG, 100, bos);
         bos.flush();
         bos.close();
+        System.out.println("Saved");
     }
 
     private void getBundle(){
