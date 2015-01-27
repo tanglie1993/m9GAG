@@ -42,6 +42,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -67,6 +70,8 @@ public class DrawerTestActivity extends ActionBarActivity
 
     int currentCategory;
 
+    boolean onScrollEnabled=false;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -74,6 +79,8 @@ public class DrawerTestActivity extends ActionBarActivity
         setContentView(R.layout.activity_drawer_test);
         initDrawerListView();
         initFeedsListView();
+        setListeners();
+        requestData(0);
     }
 
     private void initDrawerListView()
@@ -111,6 +118,7 @@ public class DrawerTestActivity extends ActionBarActivity
                     switchList(position);
                     currentCategory=position;
                     if(dataItemList[position].size()==0){
+                        System.out.println("requestData from drawerlist");
                         requestData(position);
                     }
                 }
@@ -134,7 +142,7 @@ public class DrawerTestActivity extends ActionBarActivity
         }
         myAdapter=new FeedsAdapter(getApplicationContext(),dataItemList[currentCategory]);
         contentListview.setAdapter(myAdapter);
-        setListeners();
+
     }
 
     private void requestData(final int position){
@@ -165,6 +173,35 @@ public class DrawerTestActivity extends ActionBarActivity
                     dataItemList[position].add(item);
                     myAdapter.notifyDataSetChanged();
 
+                    ImageLoader.getInstance().loadImage(feed.images.large, new ImageLoadingListener() {
+
+                        long time=0;
+                        @Override
+                        public void onLoadingStarted(String imageUri, View view) {
+                            time=System.currentTimeMillis();
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view,
+                                                    FailReason failReason) {
+                            System.out.println("failed:"+failReason.toString());
+
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            System.out.println("time:"+(System.currentTimeMillis()-time));
+                            item.largeImage=loadedImage;
+                            myAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String imageUri, View view) {
+
+                        }
+                    });
+                    /*
+
                     final int positionMarker=dataItemList[position].size()-1;
                     ImageRequest imageRequest = new ImageRequest(feed.images.large,
                             new Response.Listener<Bitmap>()
@@ -179,7 +216,10 @@ public class DrawerTestActivity extends ActionBarActivity
                             }, 0, 0, Bitmap.Config.RGB_565, null);
                     mQueue.add(imageRequest);
 
+                    */
+
                     System.out.println(feed.caption);
+                    onScrollEnabled=true;
                 }
 
             }
@@ -227,13 +267,16 @@ public class DrawerTestActivity extends ActionBarActivity
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem,
                                  int visibleItemCount, int totalItemCount) {
+                /*
                 //Check if the last view is visible
-                if(currentCategory==3){
+                if(currentCategory==3 || onScrollEnabled==false){
                     return;
                 }
                 if (++firstVisibleItem + visibleItemCount > totalItemCount) {
+                    System.out.println("requestData from onscroll");
                     requestData(currentCategory);
                 }
+                */
             }
 
             @Override

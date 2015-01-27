@@ -102,6 +102,7 @@ public class FeedsAdapter extends BaseAdapter
         Matrix matrix = new Matrix();
         matrix.postScale(scaleWidth, scaleWidth);
         Bitmap picNewRes = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), picHeight, matrix, true);
+        iv.set
 
         iv.setImageBitmap(picNewRes);
 
