@@ -66,7 +66,7 @@ public class DrawerTestActivity extends ActionBarActivity
 
     FeedsAdapter myAdapter;
 
-    AlphaInAnimationAdapter animationAdapter;
+    Bitmap green;
 
     int currentCategory;
 
@@ -142,6 +142,7 @@ public class DrawerTestActivity extends ActionBarActivity
         }
         myAdapter=new FeedsAdapter(getApplicationContext(),dataItemList[currentCategory]);
         contentListview.setAdapter(myAdapter);
+        green= BitmapFactory.decodeResource(getResources(), R.drawable.green);
 
     }
 
@@ -167,39 +168,13 @@ public class DrawerTestActivity extends ActionBarActivity
                     item.caption=feed.caption;
                     item.category=position;
                     item.id=feed.id;
-                    Resources res=getResources();
-                    Bitmap green= BitmapFactory.decodeResource(res, R.drawable.green);
+                    item.largeImageURL=feed.images.large;
+
                     item.largeImage= green;
                     dataItemList[position].add(item);
                     myAdapter.notifyDataSetChanged();
 
-                    ImageLoader.getInstance().loadImage(feed.images.large, new ImageLoadingListener() {
 
-                        long time=0;
-                        @Override
-                        public void onLoadingStarted(String imageUri, View view) {
-                            time=System.currentTimeMillis();
-                        }
-
-                        @Override
-                        public void onLoadingFailed(String imageUri, View view,
-                                                    FailReason failReason) {
-                            System.out.println("failed:"+failReason.toString());
-
-                        }
-
-                        @Override
-                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                            System.out.println("time:"+(System.currentTimeMillis()-time));
-                            item.largeImage=loadedImage;
-                            myAdapter.notifyDataSetChanged();
-                        }
-
-                        @Override
-                        public void onLoadingCancelled(String imageUri, View view) {
-
-                        }
-                    });
                     /*
 
                     final int positionMarker=dataItemList[position].size()-1;

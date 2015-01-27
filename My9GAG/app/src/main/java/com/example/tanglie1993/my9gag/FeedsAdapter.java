@@ -25,6 +25,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -87,24 +90,53 @@ public class FeedsAdapter extends BaseAdapter
 
         //从list对象中为子组件赋值
         tv1.setText(list.get(position).caption);
-        WindowManager wm = (WindowManager) context.
+        final WindowManager wm = (WindowManager) context.
             getSystemService(Context.WINDOW_SERVICE);
 
         Bitmap bmp=list.get(position).largeImage;
+        iv.setImageBitmap(bmp);
+        ImageLoader.getInstance().
 
-        int screenWidth = wm.getDefaultDisplay().getWidth();
-        float scaleWidth = ((float) screenWidth ) /bmp.getWidth();
-        int picHeight=Math.round(500/scaleWidth);
-        if(bmp.getHeight()<picHeight){
-            picHeight=bmp.getHeight();
-        }
+        ImageLoader.getInstance().loadImage(list.get(position).largeImageURL, new ImageLoadingListener() {
 
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleWidth);
-        Bitmap picNewRes = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), picHeight, matrix, true);
-        iv.set
+            long time=0;
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {
+                time=System.currentTimeMillis();
+            }
 
-        iv.setImageBitmap(picNewRes);
+            @Override
+            public void onLoadingFailed(String imageUri, View view,
+                                        FailReason failReason) {
+                System.out.println("failed:"+failReason.toString());
+
+            }
+
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                System.out.println("time:"+(System.currentTimeMillis()-time));
+
+                int screenWidth = wm.getDefaultDisplay().getWidth();
+                float scaleWidth = ((float) screenWidth ) /loadedImage.getWidth();
+                int picHeight=Math.round(500/scaleWidth);
+                if(loadedImage.getHeight()<picHeight){
+                    picHeight=loadedImage.getHeight();
+                }
+
+                Matrix matrix = new Matrix();
+                matrix.postScale(scaleWidth, scaleWidth);
+                Bitmap picNewRes = Bitmap.createBitmap(loadedImage, 0, 0, loadedImage.getWidth(), picHeight, matrix, true);
+
+                iv.setImageBitmap(picNewRes);
+            }
+
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+
+            }
+        });
+
+
 
         return convertView;
     }
