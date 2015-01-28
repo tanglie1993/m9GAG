@@ -42,7 +42,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
@@ -80,6 +82,7 @@ public class DrawerTestActivity extends ActionBarActivity
         initDrawerListView();
         initFeedsListView();
         setListeners();
+        initImageLoader();
         requestData(0);
     }
 
@@ -144,6 +147,13 @@ public class DrawerTestActivity extends ActionBarActivity
         contentListview.setAdapter(myAdapter);
         green= BitmapFactory.decodeResource(getResources(), R.drawable.green);
 
+    }
+
+    private void initImageLoader(){
+        ImageLoaderConfiguration configuration = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                .memoryCache(new WeakMemoryCache())
+                .build();
+        ImageLoader.getInstance().init(configuration);
     }
 
     private void requestData(final int position){

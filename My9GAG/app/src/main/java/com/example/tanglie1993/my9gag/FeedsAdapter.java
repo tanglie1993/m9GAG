@@ -1,6 +1,7 @@
 package com.example.tanglie1993.my9gag;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.view.WindowManager;
 import android.widget.Adapter;
@@ -8,6 +9,11 @@ import android.widget.Adapter;
 /**
  * Created by tanglie1993 on 2015/1/19.
  */
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.ref.SoftReference;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +31,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
@@ -41,6 +49,8 @@ public class FeedsAdapter extends BaseAdapter
 
     private RequestQueue newRequestQueue;
 
+    private HashMap<String, SoftReference<Bitmap>> imageCache;
+
     //构造方法，参数list传递的就是这一组数据的信息
     public FeedsAdapter(Context context, List<DataItem> list)
     {
@@ -51,6 +61,13 @@ public class FeedsAdapter extends BaseAdapter
         this.list = list;
 
         newRequestQueue = Volley.newRequestQueue(context);
+
+        imageCache=new HashMap<String, SoftReference<Bitmap>>();
+
+        for(DataItem item:list){
+
+        }
+
     }
 
     public void updateList(List<DataItem> list){
@@ -94,8 +111,26 @@ public class FeedsAdapter extends BaseAdapter
             getSystemService(Context.WINDOW_SERVICE);
 
         Bitmap bmp=list.get(position).largeImage;
-        iv.setImageBitmap(bmp);
-        ImageLoader.getInstance().
+        //iv.setImageBitmap(bmp);
+
+        System.out.println("xxx"+imageCache.keySet().size());
+
+        if(imageCache.get(list.get(position).largeImageURL)!=null){
+            Bitmap cachebmp = imageCache.get(list.get(position).largeImageURL).get();
+            System.out.println("hit1");
+            if(cachebmp!=null){
+                iv.setImageBitmap(cachebmp);
+                System.out.println("hit2");
+                return convertView;
+            }
+            else{
+                System.out.println("miss2");
+            }
+
+        }
+        else{
+            System.out.println("miss1");
+        }
 
         ImageLoader.getInstance().loadImage(list.get(position).largeImageURL, new ImageLoadingListener() {
 
@@ -116,6 +151,13 @@ public class FeedsAdapter extends BaseAdapter
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 System.out.println("time:"+(System.currentTimeMillis()-time));
 
+                System.out.println("size(before):"+loadedImage.getByteCount());
+
+                loadedImage=comp(loadedImage);
+
+                System.out.println("size(after):"+loadedImage.getByteCount());
+
+
                 int screenWidth = wm.getDefaultDisplay().getWidth();
                 float scaleWidth = ((float) screenWidth ) /loadedImage.getWidth();
                 int picHeight=Math.round(500/scaleWidth);
@@ -128,6 +170,9 @@ public class FeedsAdapter extends BaseAdapter
                 Bitmap picNewRes = Bitmap.createBitmap(loadedImage, 0, 0, loadedImage.getWidth(), picHeight, matrix, true);
 
                 iv.setImageBitmap(picNewRes);
+
+                imageCache.put(imageUri, new SoftReference<Bitmap>(picNewRes));
+                System.out.println(imageCache.keySet().size());
             }
 
             @Override
@@ -140,4 +185,13 @@ public class FeedsAdapter extends BaseAdapter
 
         return convertView;
     }
+
+    private Bitmap comp(Bitmap image) {
+
+        Matrix matrix = new Matrix();
+        matrix.setScale(0.33f, 0.33f);
+        Bitmap result = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+        return result;
+    }
+
 }
