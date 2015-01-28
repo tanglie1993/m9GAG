@@ -3,6 +3,7 @@ package com.example.tanglie1993.my9gag;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.os.Debug;
 import android.view.WindowManager;
 import android.widget.Adapter;
 
@@ -49,7 +50,9 @@ public class FeedsAdapter extends BaseAdapter
 
     private RequestQueue newRequestQueue;
 
-    private HashMap<String, SoftReference<Bitmap>> imageCache;
+    private HashMap<String,Bitmap> imageCache;
+
+    final WindowManager wm;
 
     //构造方法，参数list传递的就是这一组数据的信息
     public FeedsAdapter(Context context, List<DataItem> list)
@@ -62,11 +65,10 @@ public class FeedsAdapter extends BaseAdapter
 
         newRequestQueue = Volley.newRequestQueue(context);
 
-        imageCache=new HashMap<String, SoftReference<Bitmap>>();
+        imageCache=new HashMap<String, Bitmap>();
 
-        for(DataItem item:list){
-
-        }
+        wm = (WindowManager) context.
+            getSystemService(Context.WINDOW_SERVICE);
 
     }
 
@@ -98,6 +100,7 @@ public class FeedsAdapter extends BaseAdapter
     //根据位置得到View对象
     public View getView(int position, View convertView, ViewGroup parent)
     {
+        long time=System.currentTimeMillis();
         if(convertView == null) {
             convertView = layoutInflater.inflate(R.layout.feed_item_layout, null);
         }
@@ -107,8 +110,7 @@ public class FeedsAdapter extends BaseAdapter
 
         //从list对象中为子组件赋值
         tv1.setText(list.get(position).caption);
-        final WindowManager wm = (WindowManager) context.
-            getSystemService(Context.WINDOW_SERVICE);
+
 
         Bitmap bmp=list.get(position).largeImage;
         //iv.setImageBitmap(bmp);
@@ -116,15 +118,17 @@ public class FeedsAdapter extends BaseAdapter
         System.out.println("xxx"+imageCache.keySet().size());
 
         if(imageCache.get(list.get(position).largeImageURL)!=null){
-            Bitmap cachebmp = imageCache.get(list.get(position).largeImageURL).get();
+            Bitmap cachebmp = imageCache.get(list.get(position).largeImageURL);
             System.out.println("hit1");
             if(cachebmp!=null){
-                iv.setImageBitmap(cachebmp);
-                System.out.println("hit2");
+                iv.setImageBitmap(adjustBitmap(cachebmp));
+                System.out.println("hit2,time:"+(System.currentTimeMillis()-time));
+
+
                 return convertView;
             }
             else{
-                System.out.println("miss2");
+                System.out.println("miss2"+(System.currentTimeMillis()-time));
             }
 
         }
@@ -154,24 +158,13 @@ public class FeedsAdapter extends BaseAdapter
                 System.out.println("size(before):"+loadedImage.getByteCount());
 
                 loadedImage=comp(loadedImage);
+                imageCache.put(imageUri, loadedImage);
 
                 System.out.println("size(after):"+loadedImage.getByteCount());
 
+                iv.setImageBitmap(adjustBitmap(loadedImage));
 
-                int screenWidth = wm.getDefaultDisplay().getWidth();
-                float scaleWidth = ((float) screenWidth ) /loadedImage.getWidth();
-                int picHeight=Math.round(500/scaleWidth);
-                if(loadedImage.getHeight()<picHeight){
-                    picHeight=loadedImage.getHeight();
-                }
 
-                Matrix matrix = new Matrix();
-                matrix.postScale(scaleWidth, scaleWidth);
-                Bitmap picNewRes = Bitmap.createBitmap(loadedImage, 0, 0, loadedImage.getWidth(), picHeight, matrix, true);
-
-                iv.setImageBitmap(picNewRes);
-
-                imageCache.put(imageUri, new SoftReference<Bitmap>(picNewRes));
                 System.out.println(imageCache.keySet().size());
             }
 
@@ -180,9 +173,6 @@ public class FeedsAdapter extends BaseAdapter
 
             }
         });
-
-
-
         return convertView;
     }
 
@@ -192,6 +182,22 @@ public class FeedsAdapter extends BaseAdapter
         matrix.setScale(0.33f, 0.33f);
         Bitmap result = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
         return result;
+    }
+
+
+    private Bitmap adjustBitmap(Bitmap loadedImage){
+        int screenWidth = wm.getDefaultDisplay().getWidth();
+        float scaleWidth = ((float) screenWidth ) /loadedImage.getWidth();
+        int picHeight=Math.round(500/scaleWidth);
+        if(loadedImage.getHeight()<picHeight){
+            picHeight=loadedImage.getHeight();
+        }
+
+
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleWidth);
+        Bitmap picNewRes = Bitmap.createBitmap(loadedImage, 0, 0, loadedImage.getWidth(), picHeight, matrix, true);
+        return picNewRes;
     }
 
 }

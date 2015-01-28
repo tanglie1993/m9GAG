@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.os.Debug;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -79,6 +80,7 @@ public class DrawerTestActivity extends ActionBarActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer_test);
+        Debug.startMethodTracing("drawertest");
         initDrawerListView();
         initFeedsListView();
         setListeners();
@@ -272,6 +274,8 @@ public class DrawerTestActivity extends ActionBarActivity
     }
 
     private void openFavorites(){
+        Debug.stopMethodTracing();
+
         currentCategory=3;
         Cursor c=getContentResolver().query(FeedsProvider.FAVORITES_URI, FeedsProvider.COLUMN, null, null, null);
         dataItemList[currentCategory].clear();
