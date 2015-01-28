@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,8 @@ public class FeedsAdapter extends BaseAdapter
 
     final WindowManager wm;
 
+    private Bitmap green;
+
     //构造方法，参数list传递的就是这一组数据的信息
     public FeedsAdapter(Context context, List<DataItem> list)
     {
@@ -66,6 +69,8 @@ public class FeedsAdapter extends BaseAdapter
         newRequestQueue = Volley.newRequestQueue(context);
 
         imageCache=new HashMap<String, Bitmap>();
+
+        green = BitmapFactory.decodeResource(context.getResources(),R.drawable.green);
 
         wm = (WindowManager) context.
             getSystemService(Context.WINDOW_SERVICE);
@@ -101,6 +106,7 @@ public class FeedsAdapter extends BaseAdapter
     public View getView(int position, View convertView, ViewGroup parent)
     {
         long time=System.currentTimeMillis();
+        convertView=null;
         if(convertView == null) {
             convertView = layoutInflater.inflate(R.layout.feed_item_layout, null);
         }
@@ -111,10 +117,6 @@ public class FeedsAdapter extends BaseAdapter
         //从list对象中为子组件赋值
         tv1.setText(list.get(position).caption);
 
-
-        Bitmap bmp=list.get(position).largeImage;
-        //iv.setImageBitmap(bmp);
-
         System.out.println("xxx"+imageCache.keySet().size());
 
         if(imageCache.get(list.get(position).largeImageURL)!=null){
@@ -122,6 +124,7 @@ public class FeedsAdapter extends BaseAdapter
             System.out.println("hit1");
             if(cachebmp!=null){
                 iv.setImageBitmap(adjustBitmap(cachebmp));
+                System.out.println("setImageBitmap from cache");
                 System.out.println("hit2,time:"+(System.currentTimeMillis()-time));
 
 
@@ -142,6 +145,8 @@ public class FeedsAdapter extends BaseAdapter
             @Override
             public void onLoadingStarted(String imageUri, View view) {
                 time=System.currentTimeMillis();
+                iv.setImageBitmap(adjustBitmap(green));
+
             }
 
             @Override
@@ -163,6 +168,7 @@ public class FeedsAdapter extends BaseAdapter
                 System.out.println("size(after):"+loadedImage.getByteCount());
 
                 iv.setImageBitmap(adjustBitmap(loadedImage));
+                System.out.println("setImageBitmap from ImageLoadingListener");
 
 
                 System.out.println(imageCache.keySet().size());
@@ -170,7 +176,7 @@ public class FeedsAdapter extends BaseAdapter
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
-
+                System.out.println("LoadingCancelled");
             }
         });
         return convertView;
