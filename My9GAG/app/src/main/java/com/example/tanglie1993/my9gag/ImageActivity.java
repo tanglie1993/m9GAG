@@ -90,6 +90,7 @@ public class ImageActivity extends ActionBarActivity {
             }
             return true;
         }else if(id == R.id.add_to_favorite){
+            /*
             ContentValues values=new ContentValues();
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             Bitmap bmp = bundle.largeImage;
@@ -107,6 +108,7 @@ public class ImageActivity extends ActionBarActivity {
             else{
                 System.out.println("Insertion failed.");
             }
+            */
         }else if(id == R.id.delete_from_favorite){
             getContentResolver().delete(FeedsProvider.FAVORITES_URI, "ID='"+ bundle.id+"'",null);
         }
@@ -134,7 +136,9 @@ public class ImageActivity extends ActionBarActivity {
         Cursor c =getContentResolver().query(FeedsProvider.BUNDLE_URI, projection, null, null, null);
         c.moveToFirst();
         byte[] bitmapArray=c.getBlob(1);
+        /*
         bundle.largeImage=BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+        */
         bundle.id=c.getString(0);
         bundle.caption=c.getString(2);
         bundle.category=c.getInt(3);
@@ -143,7 +147,9 @@ public class ImageActivity extends ActionBarActivity {
 
     private void setImage(){
         imageView= (ImageView) findViewById(R.id.imageView);
+        /*
         image=bundle.largeImage;
+        */
         imageView.setImageBitmap(image);
 
 

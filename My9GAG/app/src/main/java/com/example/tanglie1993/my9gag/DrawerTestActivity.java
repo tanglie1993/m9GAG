@@ -69,7 +69,7 @@ public class DrawerTestActivity extends ActionBarActivity
 
     FeedsAdapter myAdapter;
 
-    Bitmap green;
+    Bitmap GREEN;
 
     int currentCategory;
 
@@ -80,7 +80,6 @@ public class DrawerTestActivity extends ActionBarActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer_test);
-        Debug.startMethodTracing("drawertest");
         initDrawerListView();
         initFeedsListView();
         setListeners();
@@ -147,7 +146,7 @@ public class DrawerTestActivity extends ActionBarActivity
         }
         myAdapter=new FeedsAdapter(getApplicationContext(),dataItemList[currentCategory]);
         contentListview.setAdapter(myAdapter);
-        green= BitmapFactory.decodeResource(getResources(), R.drawable.green);
+        GREEN= BitmapFactory.decodeResource(getResources(), R.drawable.green);
 
     }
 
@@ -182,7 +181,6 @@ public class DrawerTestActivity extends ActionBarActivity
                     item.id=feed.id;
                     item.largeImageURL=feed.images.large;
 
-                    item.largeImage= green;
                     dataItemList[position].add(item);
                     myAdapter.notifyDataSetChanged();
 
@@ -232,7 +230,7 @@ public class DrawerTestActivity extends ActionBarActivity
 
                                 ContentValues values=new ContentValues();
                                 ByteArrayOutputStream os = new ByteArrayOutputStream();
-                                Bitmap bmp = item.largeImage;
+                                Bitmap bmp = GREEN;
                                 bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
                                 values.put("ID",item.id);
                                 values.put("LARGE_IMAGE",os.toByteArray());
@@ -274,7 +272,7 @@ public class DrawerTestActivity extends ActionBarActivity
     }
 
     private void openFavorites(){
-        Debug.stopMethodTracing();
+        /*
 
         currentCategory=3;
         Cursor c=getContentResolver().query(FeedsProvider.FAVORITES_URI, FeedsProvider.COLUMN, null, null, null);
@@ -288,12 +286,13 @@ public class DrawerTestActivity extends ActionBarActivity
             DataItem item=new DataItem();
             item.id=c.getString(0);
             byte[] bitmapArray=c.getBlob(1);
-            item.largeImage=BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+            item.largeImageURL=BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
             item.caption=c.getString(2);
             item.category=c.getInt(3);
             dataItemList[currentCategory].add(item);
         }while(c.moveToNext());
         myAdapter.notifyDataSetChanged();
+        */
     }
 
     @Override

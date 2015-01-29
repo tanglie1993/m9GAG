@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 public class DataItem {
     public String id;
     public String caption;
-    public Bitmap largeImage;
     public String largeImageURL;
     public String next;
     public int category;

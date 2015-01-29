@@ -3,6 +3,7 @@ package com.example.tanglie1993.my9gag;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Debug;
 import android.view.WindowManager;
 import android.widget.Adapter;
@@ -57,6 +58,8 @@ public class FeedsAdapter extends BaseAdapter
 
     private Bitmap green;
 
+    long memory;
+
     //构造方法，参数list传递的就是这一组数据的信息
     public FeedsAdapter(Context context, List<DataItem> list)
     {
@@ -106,7 +109,21 @@ public class FeedsAdapter extends BaseAdapter
     public View getView(int position, View convertView, ViewGroup parent)
     {
         long time=System.currentTimeMillis();
-        convertView=null;
+        System.out.println("memory:"+memory);
+        if(convertView!=null) {
+            System.out.println("convertView:"+convertView.getId());
+            ViewGroup layout=(ViewGroup) convertView;
+            ImageView imv=(ImageView) layout.getChildAt(1);
+            BitmapDrawable drawable=(BitmapDrawable) imv.getDrawable();
+            Bitmap bmp=drawable.getBitmap();
+            memory-=bmp.getByteCount();
+            bmp.recycle();
+            if(bmp.isRecycled()==true){
+                System.out.println("recycle success");
+            }else{
+                System.out.println("recycle failed");
+            }
+        }
         if(convertView == null) {
             convertView = layoutInflater.inflate(R.layout.feed_item_layout, null);
         }
@@ -117,13 +134,14 @@ public class FeedsAdapter extends BaseAdapter
         //从list对象中为子组件赋值
         tv1.setText(list.get(position).caption);
 
-        System.out.println("xxx"+imageCache.keySet().size());
-
         if(imageCache.get(list.get(position).largeImageURL)!=null){
             Bitmap cachebmp = imageCache.get(list.get(position).largeImageURL);
             System.out.println("hit1");
             if(cachebmp!=null){
-                iv.setImageBitmap(adjustBitmap(cachebmp));
+                Bitmap bmp=adjustBitmap(cachebmp);
+                iv.setImageBitmap(bmp);
+                memory+=bmp.getByteCount();
+
                 System.out.println("setImageBitmap from cache");
                 System.out.println("hit2,time:"+(System.currentTimeMillis()-time));
 
@@ -162,12 +180,13 @@ public class FeedsAdapter extends BaseAdapter
 
                 System.out.println("size(before):"+loadedImage.getByteCount());
 
-                loadedImage=comp(loadedImage);
-                imageCache.put(imageUri, loadedImage);
+                Bitmap compressed=comp(loadedImage);
+                imageCache.put(imageUri, compressed);
+                loadedImage.recycle();
 
                 System.out.println("size(after):"+loadedImage.getByteCount());
 
-                iv.setImageBitmap(adjustBitmap(loadedImage));
+                iv.setImageBitmap(adjustBitmap(compressed));
                 System.out.println("setImageBitmap from ImageLoadingListener");
 
 
