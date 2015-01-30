@@ -66,7 +66,7 @@ public class ImageActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if((Integer) getIntent().getExtras().get("category")==3){
+        if((Integer) getIntent().getExtras().get("CATEGORY")==3){
             getMenuInflater().inflate(R.menu.menu_favorites, menu);
         }else{
             getMenuInflater().inflate(R.menu.menu_image, menu);
@@ -86,20 +86,20 @@ public class ImageActivity extends ActionBarActivity {
         if (id == R.id.save_as_png) {
 
             try{
-                saveFile(displayedBitmap, getIntent().getExtras().getString("id")+".PNG");
+                saveFile(displayedBitmap, getIntent().getExtras().getString("ID")+".PNG");
             }catch(IOException e){
                 e.printStackTrace();
             }
             return true;
         }else if(id == R.id.add_to_favorite){
             ContentValues values=new ContentValues();
-            values.put("ID",getIntent().getExtras().getString("id"));
+            values.put("ID",getIntent().getExtras().getString("ID"));
             values.put("IMAGE_URL",getIntent().getExtras().getString("IMAGE_URL"));
             values.put("CAPTION",getIntent().getExtras().getString("CAPTION"));
             values.put("CATEGORY",getIntent().getExtras().getString("CATEGORY"));
 
 
-            if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ getIntent().getExtras().getString("id")+"'", null, null).getCount()==0){
+            if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ getIntent().getExtras().getString("ID")+"'", null, null).getCount()==0){
                 getContentResolver().insert(FeedsProvider.FAVORITES_URI, values);
                 System.out.println("Insertion succeeded.");
             }
@@ -107,7 +107,7 @@ public class ImageActivity extends ActionBarActivity {
                 System.out.println("Insertion failed.");
             }
         }else if(id == R.id.delete_from_favorite){
-            getContentResolver().delete(FeedsProvider.FAVORITES_URI, "ID='"+ getIntent().getExtras().getString("id")+"'",null);
+            getContentResolver().delete(FeedsProvider.FAVORITES_URI, "ID='"+ getIntent().getExtras().getString("ID")+"'",null);
         }
 
         return super.onOptionsItemSelected(item);
@@ -131,7 +131,7 @@ public class ImageActivity extends ActionBarActivity {
     private void setImage(){
         imageView= (ImageView) findViewById(R.id.imageView);
 
-        ImageLoader.getInstance().loadImage(getIntent().getExtras().getString("largeImageURL"), new ImageLoadingListener() {
+        ImageLoader.getInstance().loadImage(getIntent().getExtras().getString("IMAGE_URL"), new ImageLoadingListener() {
 
             long time=0;
             @Override

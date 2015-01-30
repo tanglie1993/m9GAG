@@ -224,10 +224,10 @@ public class DrawerTestActivity extends ActionBarActivity
                                 int selectedPosition = arg2;
                                 DataItem item = (DataItem) dataItemList[currentCategory].get(selectedPosition);
                                 Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
-                                intent.putExtra("category",currentCategory);
-                                intent.putExtra("caption", item.caption);
-                                intent.putExtra("id", item.id);
-                                intent.putExtra("largeImageURL",item.largeImageURL);
+                                intent.putExtra("CATEGORY",currentCategory);
+                                intent.putExtra("CAPTION", item.caption);
+                                intent.putExtra("ID", item.id);
+                                intent.putExtra("IMAGE_URL",item.largeImageURL);
                                 startActivity(intent);
 
                             }
