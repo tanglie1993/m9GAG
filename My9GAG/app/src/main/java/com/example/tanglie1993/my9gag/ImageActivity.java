@@ -27,6 +27,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,21 +44,20 @@ public class ImageActivity extends ActionBarActivity {
 
     ImageView imageView;
 
-    PhotoViewAttacher mAttacher;
+    Bitmap green;
 
-    Bitmap image;
+    Bitmap displayedBitmap;
 
     String ALBUM_PATH = Environment.getExternalStorageDirectory() + "/download_test/";
 
-    String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
-
-    private DataItem bundle;
+    String[] projection={"ID","IMAGE_URL","CAPTION","CATEGORY"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
-        getBundle();
+        green = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.green);
+
         setImage();
 
     }
@@ -64,7 +66,7 @@ public class ImageActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        if((Integer) getIntent().getExtras().get("from")==3){
+        if((Integer) getIntent().getExtras().get("category")==3){
             getMenuInflater().inflate(R.menu.menu_favorites, menu);
         }else{
             getMenuInflater().inflate(R.menu.menu_image, menu);
@@ -84,33 +86,28 @@ public class ImageActivity extends ActionBarActivity {
         if (id == R.id.save_as_png) {
 
             try{
-                saveFile(image, bundle.id+".PNG");
+                saveFile(displayedBitmap, getIntent().getExtras().getString("id")+".PNG");
             }catch(IOException e){
                 e.printStackTrace();
             }
             return true;
         }else if(id == R.id.add_to_favorite){
-            /*
             ContentValues values=new ContentValues();
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            Bitmap bmp = bundle.largeImage;
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
-            values.put("ID",bundle.id);
-            values.put("LARGE_IMAGE",os.toByteArray());
-            values.put("CAPTION",bundle.caption);
-            values.put("CATEGORY",bundle.category);
+            values.put("ID",getIntent().getExtras().getString("id"));
+            values.put("IMAGE_URL",getIntent().getExtras().getString("IMAGE_URL"));
+            values.put("CAPTION",getIntent().getExtras().getString("CAPTION"));
+            values.put("CATEGORY",getIntent().getExtras().getString("CATEGORY"));
 
 
-            if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ bundle.id+"'", null, null).getCount()==0){
+            if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ getIntent().getExtras().getString("id")+"'", null, null).getCount()==0){
                 getContentResolver().insert(FeedsProvider.FAVORITES_URI, values);
                 System.out.println("Insertion succeeded.");
             }
             else{
                 System.out.println("Insertion failed.");
             }
-            */
         }else if(id == R.id.delete_from_favorite){
-            getContentResolver().delete(FeedsProvider.FAVORITES_URI, "ID='"+ bundle.id+"'",null);
+            getContentResolver().delete(FeedsProvider.FAVORITES_URI, "ID='"+ getIntent().getExtras().getString("id")+"'",null);
         }
 
         return super.onOptionsItemSelected(item);
@@ -130,46 +127,56 @@ public class ImageActivity extends ActionBarActivity {
         System.out.println("Saved");
     }
 
-    private void getBundle(){
-        bundle=new DataItem();
-        String[] projection={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
-        Cursor c =getContentResolver().query(FeedsProvider.BUNDLE_URI, projection, null, null, null);
-        c.moveToFirst();
-        byte[] bitmapArray=c.getBlob(1);
-        /*
-        bundle.largeImage=BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
-        */
-        bundle.id=c.getString(0);
-        bundle.caption=c.getString(2);
-        bundle.category=c.getInt(3);
-        getContentResolver().delete(FeedsProvider.BUNDLE_URI, null, null);
-    }
 
     private void setImage(){
         imageView= (ImageView) findViewById(R.id.imageView);
-        /*
-        image=bundle.largeImage;
-        */
-        imageView.setImageBitmap(image);
 
+        ImageLoader.getInstance().loadImage(getIntent().getExtras().getString("largeImageURL"), new ImageLoadingListener() {
 
-        LayoutParams para=imageView.getLayoutParams();
-        WindowManager wm = (WindowManager) getApplicationContext()
-                .getSystemService(Context.WINDOW_SERVICE);
-
-        para.height = wm.getDefaultDisplay().getHeight();
-        para.width = wm.getDefaultDisplay().getWidth();
-        imageView.setLayoutParams(para);
-
-        mAttacher = new PhotoViewAttacher(imageView);
-        mAttacher.setOnLongClickListener(new View.OnLongClickListener() {
+            long time=0;
             @Override
-            public boolean onLongClick(View view) {
-                openOptionsMenu();
-                return false;
+            public void onLoadingStarted(String imageUri, View view) {
+                time=System.currentTimeMillis();
+                imageView.setImageBitmap(green);
+
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view,
+                                        FailReason failReason) {
+                System.out.println("failed:"+failReason.toString());
+
+            }
+
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+                System.out.println("loadingtime:"+(System.currentTimeMillis()-time));
+
+                displayedBitmap=loadedImage;
+                imageView.setImageBitmap(loadedImage);
+                PhotoViewAttacher mAttacher = new PhotoViewAttacher(imageView);
+                mAttacher.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        openOptionsMenu();
+                        return false;
+                    }
+                });
+            }
+
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+                System.out.println("LoadingCancelled");
             }
         });
 
     }
+
+
+
+
+
+
 
 }

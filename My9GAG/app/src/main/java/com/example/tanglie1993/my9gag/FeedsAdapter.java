@@ -177,8 +177,14 @@ public class FeedsAdapter extends BaseAdapter
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 System.out.println("time:"+(System.currentTimeMillis()-time));
+                System.out.println("imageUri:"+imageUri);
+                if(loadedImage==null){
+                    System.out.println("loadedImage==null");
+                }
+                else{
+                    System.out.println("loadedImage!=null");
+                }
 
-                System.out.println("size(before):"+loadedImage.getByteCount());
 
                 Bitmap compressed=comp(loadedImage);
                 imageCache.put(imageUri, compressed);
@@ -188,9 +194,6 @@ public class FeedsAdapter extends BaseAdapter
 
                 iv.setImageBitmap(adjustBitmap(compressed));
                 System.out.println("setImageBitmap from ImageLoadingListener");
-
-
-                System.out.println(imageCache.keySet().size());
             }
 
             @Override

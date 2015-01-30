@@ -19,7 +19,7 @@ public class FeedsProvider extends ContentProvider {
 
     public static final String FAVORITES = "favorites";
 
-    public static final String BUNDLE = "bundleData";
+    public static final String CACHE = "cache";
 
     public static final String DATABASE_NAME = "FeedsProvider";
 
@@ -27,11 +27,11 @@ public class FeedsProvider extends ContentProvider {
 
     public static final Uri CONTENT_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider");
 
-    public static final Uri BUNDLE_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider/bundleData");
+    public static final Uri CACHE_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider/cache");
 
     public static final Uri FAVORITES_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider/favorites");
 
-    public static final String[] COLUMN={"ID","LARGE_IMAGE","CAPTION","CATEGORY"};
+    public static final String[] COLUMN={"ID","IMAGE_URL","CAPTION","CATEGORY"};
 
     private DatabaseHelper dbHelper;
 
@@ -40,7 +40,7 @@ public class FeedsProvider extends ContentProvider {
     public FeedsProvider() {
         matcher = new UriMatcher(UriMatcher.NO_MATCH);
         matcher.addURI("com.example.tanglie1993.FeedsProvider",FAVORITES, 0);
-        matcher.addURI("com.example.tanglie1993.FeedsProvider",BUNDLE, 1);
+        matcher.addURI("com.example.tanglie1993.FeedsProvider",CACHE, 1);
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -51,8 +51,8 @@ public class FeedsProvider extends ContentProvider {
         @Override
         public void onCreate(SQLiteDatabase db) {
             //创建用于存储数据的表
-            db.execSQL("Create table " + FAVORITES + " ( ID TEXT PRIMARY KEY, LARGE_IMAGE BLOB, CAPTION TEXT, CATEGORY INT);");
-            db.execSQL("Create table " + BUNDLE + " ( ID TEXT PRIMARY KEY, LARGE_IMAGE BLOB, CAPTION TEXT, CATEGORY INT);");
+            db.execSQL("Create table " + FAVORITES + " ( ID TEXT PRIMARY KEY, IMAGE_URL TEXT, IMAGE BLOB, CAPTION TEXT, CATEGORY INT);");
+            db.execSQL("Create table " + CACHE + " ( ID TEXT PRIMARY KEY, LARGE_IMAGE TEXT, CAPTION TEXT, INSERT_TIME TIMESTAMP, LAST_USED TIMESTAMP);");
         }
 
 
@@ -74,7 +74,7 @@ public class FeedsProvider extends ContentProvider {
                 db.delete(FAVORITES, selection, selectionArgs);
                 return 0;
             case 1:
-                db.delete(BUNDLE, selection, selectionArgs);
+                db.delete(CACHE, selection, selectionArgs);
                 return 0;
             default://不匹配
                 return 1;
@@ -97,7 +97,7 @@ public class FeedsProvider extends ContentProvider {
                 rowId = db.insert(FAVORITES, null, values);
                 break;
             case 1:
-                rowId = db.insert(BUNDLE, null, values);
+                rowId = db.insert(CACHE, null, values);
                 break;
             default://不匹配
                 break;
@@ -127,7 +127,7 @@ public class FeedsProvider extends ContentProvider {
                 qb.setTables(FAVORITES);
                 break;
             case 1:
-                qb.setTables(BUNDLE);
+                qb.setTables(CACHE);
                 break;
             default://不匹配
                 break;

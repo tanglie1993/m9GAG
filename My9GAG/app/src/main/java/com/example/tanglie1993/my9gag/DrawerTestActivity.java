@@ -76,8 +76,7 @@ public class DrawerTestActivity extends ActionBarActivity
     boolean onScrollEnabled=false;
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer_test);
         initDrawerListView();
@@ -117,7 +116,6 @@ public class DrawerTestActivity extends ActionBarActivity
                     mDrawerLayout.closeDrawer(mDrawerList);
                     return;
                 }
-                System.out.println("" + category[position]);
                 if(position!=currentCategory){
                     switchList(position);
                     currentCategory=position;
@@ -226,54 +224,18 @@ public class DrawerTestActivity extends ActionBarActivity
                                 int selectedPosition = arg2;
                                 DataItem item = (DataItem) dataItemList[currentCategory].get(selectedPosition);
                                 Intent intent = new Intent(DrawerTestActivity.this, ImageActivity.class);
-                                intent.putExtra("from",currentCategory);
-
-                                ContentValues values=new ContentValues();
-                                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                                Bitmap bmp = GREEN;
-                                bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
-                                values.put("ID",item.id);
-                                values.put("LARGE_IMAGE",os.toByteArray());
-                                values.put("CAPTION",item.caption);
-                                values.put("CATEGORY",item.category);
-                                String projection[]={"ID"};
-                                if(getContentResolver().query(FeedsProvider.BUNDLE_URI, projection, "ID='"+item.id+"'", null, null).getCount()==0){
-                                    getContentResolver().insert(FeedsProvider.BUNDLE_URI, values);
-                                    System.out.println("Insertion succeeded.");
-                                }
-                                else{
-                                    System.out.println("Insertion failed.");
-                                }
+                                intent.putExtra("category",currentCategory);
+                                intent.putExtra("caption", item.caption);
+                                intent.putExtra("id", item.id);
+                                intent.putExtra("largeImageURL",item.largeImageURL);
                                 startActivity(intent);
+
                             }
                         }
                 );
-        contentListview.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem,
-                                 int visibleItemCount, int totalItemCount) {
-                /*
-                //Check if the last view is visible
-                if(currentCategory==3 || onScrollEnabled==false){
-                    return;
-                }
-                if (++firstVisibleItem + visibleItemCount > totalItemCount) {
-                    System.out.println("requestData from onscroll");
-                    requestData(currentCategory);
-                }
-                */
-            }
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState){
-                //TODO
-            }
-        });
     }
 
     private void openFavorites(){
-        /*
-
         currentCategory=3;
         Cursor c=getContentResolver().query(FeedsProvider.FAVORITES_URI, FeedsProvider.COLUMN, null, null, null);
         dataItemList[currentCategory].clear();
@@ -285,14 +247,14 @@ public class DrawerTestActivity extends ActionBarActivity
         do{
             DataItem item=new DataItem();
             item.id=c.getString(0);
-            byte[] bitmapArray=c.getBlob(1);
-            item.largeImageURL=BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
+
+            item.largeImageURL=c.getString(1);
             item.caption=c.getString(2);
             item.category=c.getInt(3);
+            System.out.println("id:"+item.id+"URL:"+item.largeImageURL+"caption:"+item.caption);
             dataItemList[currentCategory].add(item);
         }while(c.moveToNext());
         myAdapter.notifyDataSetChanged();
-        */
     }
 
     @Override
