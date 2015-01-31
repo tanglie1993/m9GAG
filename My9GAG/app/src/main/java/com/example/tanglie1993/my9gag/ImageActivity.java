@@ -1,5 +1,6 @@
 package com.example.tanglie1993.my9gag;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -48,6 +49,8 @@ public class ImageActivity extends ActionBarActivity {
 
     Bitmap displayedBitmap;
 
+    ProgressDialog MyDialog;
+
     String ALBUM_PATH = Environment.getExternalStorageDirectory() + "/download_test/";
 
     String[] projection={"ID","IMAGE_URL","CAPTION","CATEGORY"};
@@ -57,7 +60,8 @@ public class ImageActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
         green = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.green);
-
+        // 创建ProgressDialog对象
+        MyDialog = ProgressDialog.show(ImageActivity.this, " " , " Loading. Please wait ... ", true);
         setImage();
 
     }
@@ -131,13 +135,14 @@ public class ImageActivity extends ActionBarActivity {
     private void setImage(){
         imageView= (ImageView) findViewById(R.id.imageView);
 
+
+
         ImageLoader.getInstance().loadImage(getIntent().getExtras().getString("IMAGE_URL"), new ImageLoadingListener() {
 
             long time=0;
             @Override
             public void onLoadingStarted(String imageUri, View view) {
                 time=System.currentTimeMillis();
-                imageView.setImageBitmap(green);
 
             }
 
@@ -153,7 +158,16 @@ public class ImageActivity extends ActionBarActivity {
 
                 System.out.println("loadingtime:"+(System.currentTimeMillis()-time));
 
+                MyDialog.dismiss();
+
                 displayedBitmap=loadedImage;
+                LayoutParams para=imageView.getLayoutParams();
+                WindowManager wm = (WindowManager) getApplicationContext()
+                        .getSystemService(Context.WINDOW_SERVICE);
+
+                para.height = wm.getDefaultDisplay().getHeight();
+                para.width = wm.getDefaultDisplay().getWidth();
+                imageView.setLayoutParams(para);
                 imageView.setImageBitmap(loadedImage);
                 PhotoViewAttacher mAttacher = new PhotoViewAttacher(imageView);
                 mAttacher.setOnLongClickListener(new View.OnLongClickListener() {

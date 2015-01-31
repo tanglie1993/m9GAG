@@ -137,6 +137,7 @@ public class DrawerTestActivity extends ActionBarActivity
 
     private void initFeedsListView(){
 
+
         contentListview=(ListView) findViewById(R.id.testListView);
         dataItemList=new ArrayList[categoriesList.length];
         for(int i=0;i<categoriesList.length; i++){
@@ -156,6 +157,7 @@ public class DrawerTestActivity extends ActionBarActivity
     }
 
     private void requestData(final int position){
+        System.out.println("1");
         final int pos=position;
 
         String next="0";
@@ -164,9 +166,11 @@ public class DrawerTestActivity extends ActionBarActivity
             next=item.next;
 
         }
+        System.out.println("2");
         StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://infinigag-us.aws.af.cm/" + categoriesList[position] +"/" + next,  new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                System.out.println("4");
                 Gson mGson = new Gson();
                 Feed.FeedRequestData frd = mGson.fromJson(response, Feed.FeedRequestData.class);
                 String next=frd.getPage();
@@ -213,6 +217,7 @@ public class DrawerTestActivity extends ActionBarActivity
                 error.printStackTrace();
             }
         }) {};
+        System.out.println("3");
         mQueue.add(stringRequest);
     }
 
