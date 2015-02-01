@@ -41,6 +41,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.etsy.android.grid.StaggeredGridView;
 import com.google.gson.Gson;
 import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
@@ -59,7 +60,7 @@ public class DrawerTestActivity extends ActionBarActivity
 
     ListView mDrawerList;
 
-    ListView contentListview;
+    StaggeredGridView contentListview;
 
     ArrayList[] dataItemList;
 
@@ -79,16 +80,14 @@ public class DrawerTestActivity extends ActionBarActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer_test);
-        startActivity(new Intent(DrawerTestActivity.this, StaggeredViewActivity.class));
+        //startActivity(new Intent(DrawerTestActivity.this, StaggeredViewActivity.class));
 
-
-        /*
         initDrawerListView();
         initFeedsListView();
         setListeners();
         initImageLoader();
         requestData(0);
-        */
+
     }
 
     private void initDrawerListView()
@@ -143,7 +142,7 @@ public class DrawerTestActivity extends ActionBarActivity
     private void initFeedsListView(){
 
 
-        contentListview=(ListView) findViewById(R.id.testListView);
+        contentListview=(StaggeredGridView) findViewById(R.id.grid_view);
         dataItemList=new ArrayList[categoriesList.length];
         for(int i=0;i<categoriesList.length; i++){
             dataItemList[i]=new ArrayList<DataItem>();

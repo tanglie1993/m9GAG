@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/green"
     >
     <!--
         <LinearLayout
@@ -45,10 +46,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
-            <ListView
-                android:id="@+id/testListView"
+            <com.etsy.android.grid.StaggeredGridView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/grid_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:cacheColorHint="#FFFFFF"
+                app:grid_paddingBottom="8dp"
+                app:grid_paddingTop="8dp"
+                app:grid_paddingLeft="8dp"
+                app:grid_paddingRight="8dp"
+                app:item_margin="8dp"
+                app:column_count="1" />
 
         </FrameLayout>
         <!-- android:layout_gravity="start" tells DrawerLayout to treat
