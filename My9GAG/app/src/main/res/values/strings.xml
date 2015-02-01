@@ -7,5 +7,6 @@
     <string name="title_activity_image">ImageActivity</string>
     <string name="title_activity_drawer_test">DrawerTestActivity</string>
     <string name="title_activity_favorites">FavoritesActivity</string>
+    <string name="title_activity_staggered_view">StaggeredViewActivity</string>
 
 </resources>

@@ -79,11 +79,16 @@ public class DrawerTestActivity extends ActionBarActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer_test);
+        startActivity(new Intent(DrawerTestActivity.this, StaggeredViewActivity.class));
+
+
+        /*
         initDrawerListView();
         initFeedsListView();
         setListeners();
         initImageLoader();
         requestData(0);
+        */
     }
 
     private void initDrawerListView()
