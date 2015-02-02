@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -106,12 +107,16 @@ public class ImageActivity extends ActionBarActivity {
             if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ getIntent().getExtras().getString("ID")+"'", null, null).getCount()==0){
                 getContentResolver().insert(FeedsProvider.FAVORITES_URI, values);
                 System.out.println("Insertion succeeded.");
+                Toast.makeText(getApplicationContext(), "Added to favorite",
+                        Toast.LENGTH_SHORT).show();
             }
             else{
                 System.out.println("Insertion failed.");
             }
         }else if(id == R.id.delete_from_favorite){
             getContentResolver().delete(FeedsProvider.FAVORITES_URI, "ID='"+ getIntent().getExtras().getString("ID")+"'",null);
+            Toast.makeText(getApplicationContext(), "Saved to "+ALBUM_PATH,
+                    Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -128,7 +133,8 @@ public class ImageActivity extends ActionBarActivity {
         bm.compress(Bitmap.CompressFormat.PNG, 100, bos);
         bos.flush();
         bos.close();
-        System.out.println("Saved");
+        Toast.makeText(getApplicationContext(), "Saved to "+ALBUM_PATH,
+                Toast.LENGTH_SHORT).show();
     }
 
 

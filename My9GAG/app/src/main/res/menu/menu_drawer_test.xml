@@ -3,5 +3,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.tanglie1993.my9gag.DrawerTestActivity">
     <item android:id="@+id/action_loadmore" android:title="Loadmore"
-        android:orderInCategory="100" app:showAsAction="never" />
+        android:orderInCategory="100" app:showAsAction="always" />
 </menu>

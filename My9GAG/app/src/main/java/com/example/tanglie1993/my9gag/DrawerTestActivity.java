@@ -1,6 +1,7 @@
 package com.example.tanglie1993.my9gag;
 
 import android.app.ActionBar;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -87,6 +88,12 @@ public class DrawerTestActivity extends ActionBarActivity
         setListeners();
         initImageLoader();
         requestData(0);
+        setActionBar();
+
+    }
+
+    private void setActionBar() {
+        setTitle("9GAG");
 
     }
 
