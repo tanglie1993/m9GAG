@@ -136,7 +136,7 @@ public class ImageActivity extends ActionBarActivity {
             }
         }else if(id == R.id.delete_from_favorite){
             getContentResolver().delete(FeedsProvider.FAVORITES_URI, "ID='"+ getIntent().getExtras().getString("ID")+"'",null);
-            Toast.makeText(getApplicationContext(), "Saved to "+ALBUM_PATH,
+            Toast.makeText(getApplicationContext(), "Deleted from favorite",
                     Toast.LENGTH_SHORT).show();
         }
 
