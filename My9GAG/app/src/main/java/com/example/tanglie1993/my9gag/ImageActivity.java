@@ -3,6 +3,7 @@ package com.example.tanglie1993.my9gag;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -61,9 +62,26 @@ public class ImageActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
         green = BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.green);
-        // 创建ProgressDialog对象
-        MyDialog = ProgressDialog.show(ImageActivity.this, " " , " Loading. Please wait ... ", true);
+        setDialog();
         setImage();
+
+    }
+
+    private void setDialog(){
+        MyDialog = new ProgressDialog(this);
+        MyDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        MyDialog.setMessage("Loading, please wait...");
+        MyDialog.setCancelable(true);
+        MyDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                // TODO Auto-generated method stub
+                MyDialog.hide();
+                finish();
+            }
+        });
+        MyDialog.show();
 
     }
 
