@@ -35,6 +35,8 @@ public class FeedsProvider extends ContentProvider {
 
     public static final String[] FAVORITES_COLUMN={"ID","IMAGE_URL","IMAGE","CAPTION","CATEGORY"};
 
+    public static final String[] CACHE_COLUMN={"ID","IMAGE","INSERT_TIME"};
+
     private DatabaseHelper dbHelper;
 
     private UriMatcher matcher;
@@ -55,7 +57,7 @@ public class FeedsProvider extends ContentProvider {
         public void onCreate(SQLiteDatabase db) {
             //创建用于存储数据的表
             db.execSQL("Create table " + FAVORITES + " ( ID TEXT PRIMARY KEY, IMAGE_URL TEXT, IMAGE BLOB, CAPTION TEXT, CATEGORY INT);");
-            db.execSQL("Create table " + CACHE + " ( ID TEXT PRIMARY KEY, LARGE_IMAGE TEXT, CAPTION TEXT, IMAGE BLOB, INSERT_TIME TIMESTAMP, LAST_USED TIMESTAMP);");
+            db.execSQL("Create table " + CACHE + " ( ID TEXT PRIMARY KEY, IMAGE BLOB, INSERT_TIME TIMESTAMP);");
             db.execSQL("Create table " + BUNDLE + " ( IMAGE BLOB );");
         }
 

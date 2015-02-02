@@ -169,6 +169,14 @@ public class FeedsAdapter extends BaseAdapter
             return convertView;
         }
 
+        Bitmap bmp=CacheManager.getFromContentProvider(list.get(position).id, context);
+        if(bmp!=null){
+            iv.setImageBitmap(bmp);
+            return convertView;
+        }
+
+        final int selectedPosition=position;
+
         ImageLoader.getInstance().loadImage(list.get(position).largeImageURL, new ImageLoadingListener() {
 
             long time=0;
@@ -200,6 +208,7 @@ public class FeedsAdapter extends BaseAdapter
 
                 Bitmap compressed=BitmapProcessor.comp(loadedImage);
                 imageCache.put(imageUri, compressed);
+                CacheManager.insertIntoContentProvider(list.get(selectedPosition).id, loadedImage, context);
                 loadedImage.recycle();
 
                 System.out.println("size(after):"+loadedImage.getByteCount());
