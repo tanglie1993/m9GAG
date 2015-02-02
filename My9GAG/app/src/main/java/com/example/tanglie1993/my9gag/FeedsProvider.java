@@ -33,7 +33,7 @@ public class FeedsProvider extends ContentProvider {
 
     public static final Uri FAVORITES_URI  = Uri.parse("content://com.example.tanglie1993.FeedsProvider/favorites");
 
-    public static final String[] COLUMN={"ID","IMAGE_URL","CAPTION","CATEGORY"};
+    public static final String[] FAVORITES_COLUMN={"ID","IMAGE_URL","IMAGE","CAPTION","CATEGORY"};
 
     private DatabaseHelper dbHelper;
 
@@ -43,6 +43,7 @@ public class FeedsProvider extends ContentProvider {
         matcher = new UriMatcher(UriMatcher.NO_MATCH);
         matcher.addURI("com.example.tanglie1993.FeedsProvider",FAVORITES, 0);
         matcher.addURI("com.example.tanglie1993.FeedsProvider",CACHE, 1);
+        matcher.addURI("com.example.tanglie1993.FeedsProvider",BUNDLE, 2);
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -63,6 +64,8 @@ public class FeedsProvider extends ContentProvider {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             db.execSQL("DROP TABLE IF EXISTS" + FAVORITES);
+            db.execSQL("DROP TABLE IF EXISTS" + CACHE);
+            db.execSQL("DROP TABLE IF EXISTS" + BUNDLE);
             onCreate(db);
         }
 
@@ -79,6 +82,8 @@ public class FeedsProvider extends ContentProvider {
             case 1:
                 db.delete(CACHE, selection, selectionArgs);
                 return 0;
+            case 2:
+                db.delete(BUNDLE, selection, selectionArgs);
             default://不匹配
                 return 1;
         }
@@ -101,6 +106,9 @@ public class FeedsProvider extends ContentProvider {
                 break;
             case 1:
                 rowId = db.insert(CACHE, null, values);
+                break;
+            case 2:
+                rowId = db.insert(BUNDLE, null, values);
                 break;
             default://不匹配
                 break;
@@ -131,6 +139,9 @@ public class FeedsProvider extends ContentProvider {
                 break;
             case 1:
                 qb.setTables(CACHE);
+                break;
+            case 2:
+                qb.setTables(BUNDLE);
                 break;
             default://不匹配
                 break;

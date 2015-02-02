@@ -25,4 +25,12 @@ public class BitmapProcessor {
         Bitmap picNewRes = Bitmap.createBitmap(loadedImage, 0, 0, loadedImage.getWidth(), picHeight, matrix, true);
         return picNewRes;
     }
+
+    public static Bitmap comp(Bitmap image) {
+
+        Matrix matrix = new Matrix();
+        matrix.setScale(0.33f, 0.33f);
+        Bitmap result = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+        return result;
+    }
 }

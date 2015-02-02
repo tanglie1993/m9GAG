@@ -119,7 +119,10 @@ public class ImageActivity extends ActionBarActivity {
             values.put("ID",getIntent().getExtras().getString("ID"));
             values.put("IMAGE_URL",getIntent().getExtras().getString("IMAGE_URL"));
             values.put("CAPTION",getIntent().getExtras().getString("CAPTION"));
-            values.put("CATEGORY",getIntent().getExtras().getString("CATEGORY"));
+            values.put("CATEGORY",getIntent().getExtras().getInt("CATEGORY"));
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            BitmapProcessor.comp(displayedBitmap).compress(Bitmap.CompressFormat.PNG, 100, os);
+            values.put("IMAGE",os.toByteArray());
 
 
             if(getContentResolver().query(FeedsProvider.FAVORITES_URI, projection, "ID='"+ getIntent().getExtras().getString("ID")+"'", null, null).getCount()==0){

@@ -1,5 +1,6 @@
 package com.example.tanglie1993.my9gag;
 
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -139,7 +140,7 @@ public class FeedsAdapter extends BaseAdapter
             Bitmap cachebmp = imageCache.get(list.get(position).largeImageURL);
             System.out.println("hit1");
             if(cachebmp!=null){
-                Bitmap bmp=adjustBitmap(cachebmp);
+                Bitmap bmp=BitmapProcessor.adjustBitmap(cachebmp, context);
                 iv.setImageBitmap(bmp);
                 memory+=bmp.getByteCount();
 
@@ -158,13 +159,23 @@ public class FeedsAdapter extends BaseAdapter
             System.out.println("miss1");
         }
 
+        Cursor c=context.getContentResolver().query(FeedsProvider.FAVORITES_URI, FeedsProvider.FAVORITES_COLUMN, "IMAGE_URL='" +list.get(position).largeImageURL+"'", null, null);
+        if(c.getCount()>0){
+            c.moveToFirst();
+            byte[] b = c.getBlob(c.getColumnIndexOrThrow("IMAGE"));
+
+            Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length, null);
+            iv.setImageBitmap(BitmapProcessor.adjustBitmap(bitmap, context));
+            return convertView;
+        }
+
         ImageLoader.getInstance().loadImage(list.get(position).largeImageURL, new ImageLoadingListener() {
 
             long time=0;
             @Override
             public void onLoadingStarted(String imageUri, View view) {
                 time=System.currentTimeMillis();
-                iv.setImageBitmap(adjustBitmap(green));
+                iv.setImageBitmap(BitmapProcessor.adjustBitmap(green, context));
 
             }
 
@@ -187,13 +198,13 @@ public class FeedsAdapter extends BaseAdapter
                 }
 
 
-                Bitmap compressed=comp(loadedImage);
+                Bitmap compressed=BitmapProcessor.comp(loadedImage);
                 imageCache.put(imageUri, compressed);
                 loadedImage.recycle();
 
                 System.out.println("size(after):"+loadedImage.getByteCount());
 
-                iv.setImageBitmap(adjustBitmap(compressed));
+                iv.setImageBitmap(BitmapProcessor.adjustBitmap(compressed, context));
                 System.out.println("setImageBitmap from ImageLoadingListener");
             }
 
@@ -205,28 +216,7 @@ public class FeedsAdapter extends BaseAdapter
         return convertView;
     }
 
-    private Bitmap comp(Bitmap image) {
-
-        Matrix matrix = new Matrix();
-        matrix.setScale(0.33f, 0.33f);
-        Bitmap result = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
-        return result;
-    }
 
 
-    private Bitmap adjustBitmap(Bitmap loadedImage){
-        int screenWidth = wm.getDefaultDisplay().getWidth();
-        float scaleWidth = ((float) screenWidth ) /loadedImage.getWidth();
-        int picHeight=Math.round(500/scaleWidth);
-        if(loadedImage.getHeight()<picHeight){
-            picHeight=loadedImage.getHeight();
-        }
-
-
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleWidth);
-        Bitmap picNewRes = Bitmap.createBitmap(loadedImage, 0, 0, loadedImage.getWidth(), picHeight, matrix, true);
-        return picNewRes;
-    }
 
 }

@@ -253,7 +253,7 @@ public class DrawerTestActivity extends ActionBarActivity
 
     private void openFavorites(){
         currentCategory=3;
-        Cursor c=getContentResolver().query(FeedsProvider.FAVORITES_URI, FeedsProvider.COLUMN, null, null, null);
+        Cursor c=getContentResolver().query(FeedsProvider.FAVORITES_URI, FeedsProvider.FAVORITES_COLUMN, null, null, null);
         dataItemList[currentCategory].clear();
         switchList(currentCategory);
         if(c.getCount()==0){
@@ -264,9 +264,9 @@ public class DrawerTestActivity extends ActionBarActivity
             DataItem item=new DataItem();
             item.id=c.getString(0);
 
-            item.largeImageURL=c.getString(1);
-            item.caption=c.getString(2);
-            item.category=c.getInt(3);
+            item.largeImageURL=c.getString(c.getColumnIndexOrThrow("IMAGE_URL"));
+            item.caption=c.getString(c.getColumnIndexOrThrow("CAPTION"));
+            item.category=c.getInt(c.getColumnIndexOrThrow("CATEGORY"));
             System.out.println("id:"+item.id+"URL:"+item.largeImageURL+"caption:"+item.caption);
             dataItemList[currentCategory].add(item);
         }while(c.moveToNext());
