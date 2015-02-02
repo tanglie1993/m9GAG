@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:background="#000000"
+    android:background="#FFFFFF"
 
     android:layout_height="match_parent">
 
@@ -10,10 +10,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
+        android:textColor="#000000"
+        android:textSize="20sp"
         android:id="@+id/feedItemTextView" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
         android:id="@+id/feedItemImageView" />
 </LinearLayout>
