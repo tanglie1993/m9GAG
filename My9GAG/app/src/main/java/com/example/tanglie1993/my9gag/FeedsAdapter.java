@@ -123,6 +123,7 @@ public class FeedsAdapter extends BaseAdapter
             }else{
                 System.out.println("recycle failed");
             }
+            convertView=null;
         }
         if(convertView == null) {
             convertView = layoutInflater.inflate(R.layout.feed_item_layout, null);

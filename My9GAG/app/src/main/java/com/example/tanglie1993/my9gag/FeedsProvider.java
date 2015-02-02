@@ -21,6 +21,8 @@ public class FeedsProvider extends ContentProvider {
 
     public static final String CACHE = "cache";
 
+    public static final String BUNDLE = "bundle";
+
     public static final String DATABASE_NAME = "FeedsProvider";
 
     public static final int DATABASE_VERSION=1;
@@ -52,7 +54,8 @@ public class FeedsProvider extends ContentProvider {
         public void onCreate(SQLiteDatabase db) {
             //创建用于存储数据的表
             db.execSQL("Create table " + FAVORITES + " ( ID TEXT PRIMARY KEY, IMAGE_URL TEXT, IMAGE BLOB, CAPTION TEXT, CATEGORY INT);");
-            db.execSQL("Create table " + CACHE + " ( ID TEXT PRIMARY KEY, LARGE_IMAGE TEXT, CAPTION TEXT, INSERT_TIME TIMESTAMP, LAST_USED TIMESTAMP);");
+            db.execSQL("Create table " + CACHE + " ( ID TEXT PRIMARY KEY, LARGE_IMAGE TEXT, CAPTION TEXT, IMAGE BLOB, INSERT_TIME TIMESTAMP, LAST_USED TIMESTAMP);");
+            db.execSQL("Create table " + BUNDLE + " ( IMAGE BLOB );");
         }
 
 
