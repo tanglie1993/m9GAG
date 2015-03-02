@@ -2,9 +2,11 @@ package com.example.tanglie1993.my9gag;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -75,6 +77,8 @@ public class DrawerTestActivity extends ActionBarActivity
 
     int currentCategory;
 
+    ProgressDialog myDialog;
+
     boolean onScrollEnabled=false;
 
     @Override
@@ -89,6 +93,24 @@ public class DrawerTestActivity extends ActionBarActivity
         initImageLoader();
         requestData(0);
         setActionBar();
+
+    }
+
+    private void setDialog(){
+        myDialog = new ProgressDialog(this);
+        myDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        myDialog.setMessage("Loading, please wait...");
+        myDialog.setCancelable(true);
+        myDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                // TODO Auto-generated method stub
+                myDialog.hide();
+                finish();
+            }
+        });
+        myDialog.show();
 
     }
 
@@ -170,6 +192,7 @@ public class DrawerTestActivity extends ActionBarActivity
     private void requestData(final int position){
         System.out.println("1");
         final int pos=position;
+        setDialog();
 
         String next="0";
         if(dataItemList[position].size()>0){
@@ -182,6 +205,7 @@ public class DrawerTestActivity extends ActionBarActivity
             @Override
             public void onResponse(String response) {
                 System.out.println("4");
+                myDialog.dismiss();
                 Gson mGson = new Gson();
                 Feed.FeedRequestData frd = mGson.fromJson(response, Feed.FeedRequestData.class);
                 String next=frd.getPage();
