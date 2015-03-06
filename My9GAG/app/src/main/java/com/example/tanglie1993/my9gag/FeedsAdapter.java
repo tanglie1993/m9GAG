@@ -135,7 +135,7 @@ public class FeedsAdapter extends BaseAdapter
         //得到条目中的子组件
         final TextView tv1 = (TextView)convertView.findViewById(R.id.feedItemTextView);
         final ImageView iv = (ImageView)convertView.findViewById(R.id.feedItemImageView);
-        final String caption = tv1.getText().toString();
+        final String caption = list.get(position).caption;
 
         //从list对象中为子组件赋值
         tv1.setText(list.get(position).caption);
