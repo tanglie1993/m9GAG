@@ -36,6 +36,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -132,8 +133,9 @@ public class FeedsAdapter extends BaseAdapter
             convertView = layoutInflater.inflate(R.layout.feed_item_layout, null);
         }
         //得到条目中的子组件
-        TextView tv1 = (TextView)convertView.findViewById(R.id.feedItemTextView);
+        final TextView tv1 = (TextView)convertView.findViewById(R.id.feedItemTextView);
         final ImageView iv = (ImageView)convertView.findViewById(R.id.feedItemImageView);
+        final String caption = tv1.getText().toString();
 
         //从list对象中为子组件赋值
         tv1.setText(list.get(position).caption);
@@ -168,6 +170,7 @@ public class FeedsAdapter extends BaseAdapter
 
             Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length, null);
             iv.setImageBitmap(BitmapProcessor.adjustBitmap(bitmap, context));
+            tv1.setText(caption);
             return convertView;
         }
 
@@ -179,13 +182,15 @@ public class FeedsAdapter extends BaseAdapter
 
         final int selectedPosition=position;
 
-        ImageLoader.getInstance().loadImage(list.get(position).largeImageURL, new ImageLoadingListener() {
+        ImageLoader.getInstance().loadImage(list.get(position).largeImageURL,null, new DisplayImageOptions.Builder().cacheOnDisk(true).build(), new ImageLoadingListener() {
 
             long time=0;
+
             @Override
             public void onLoadingStarted(String imageUri, View view) {
                 time=System.currentTimeMillis();
                 iv.setImageBitmap(BitmapProcessor.adjustBitmap(green, context));
+                tv1.setText("0%");
 
             }
 
@@ -211,6 +216,7 @@ public class FeedsAdapter extends BaseAdapter
                 Bitmap compressed=BitmapProcessor.comp(loadedImage);
                 imageCache.put(imageUri, compressed);
                 CacheManager.insertIntoContentProvider(list.get(selectedPosition).id, loadedImage, context);
+                tv1.setText(list.get(selectedPosition).caption);
                 loadedImage.recycle();
 
                 System.out.println("size(after):"+loadedImage.getByteCount());
@@ -222,6 +228,11 @@ public class FeedsAdapter extends BaseAdapter
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
                 System.out.println("LoadingCancelled");
+            }
+        },  new ImageLoadingProgressListener() {
+            @Override
+            public void onProgressUpdate(String imageUri, View view, int current, int total) {
+                tv1.setText(""+Math.round((float)current*100/(float) total)+"%");
             }
         });
         return convertView;
