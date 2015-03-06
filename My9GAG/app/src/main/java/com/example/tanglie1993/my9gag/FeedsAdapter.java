@@ -83,6 +83,7 @@ public class FeedsAdapter extends BaseAdapter
 
     public void updateList(List<DataItem> list){
         this.list = list;
+        ImageLoader.getInstance().stop();
     }
 
     //得到总的数量
