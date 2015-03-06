@@ -30,9 +30,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -162,9 +165,7 @@ public class ImageActivity extends ActionBarActivity {
     private void setImage(){
         imageView= (ImageView) findViewById(R.id.imageView);
 
-
-
-        ImageLoader.getInstance().loadImage(getIntent().getExtras().getString("IMAGE_URL"), new ImageLoadingListener() {
+        ImageLoader.getInstance().loadImage(getIntent().getExtras().getString("IMAGE_URL"), null, new DisplayImageOptions.Builder().cacheOnDisk(true).build(), new ImageLoadingListener() {
 
             long time=0;
             @Override
@@ -209,6 +210,12 @@ public class ImageActivity extends ActionBarActivity {
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
                 System.out.println("LoadingCancelled");
+            }
+        }, new ImageLoadingProgressListener() {
+            @Override
+            public void onProgressUpdate(String imageUri, View view, int current, int total) {
+                System.out.println("current:" + (float)current/(float) total);
+                MyDialog.setMessage(""+Math.round((float)current*100/(float) total)+"%");
             }
         });
 
