@@ -93,9 +93,9 @@
     <orderEntry type="library" exported="" name="pulltorefresh" level="project" />
     <orderEntry type="library" exported="" name="listviewanimations_lib-manipulation_3.1.0" level="project" />
     <orderEntry type="library" exported="" name="volley" level="project" />
+    <orderEntry type="library" exported="" name="universal-image-loader-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="listviewanimations_lib-core-slh_3.1.0" level="project" />
     <orderEntry type="library" exported="" name="photoview" level="project" />
-    <orderEntry type="library" exported="" name="universal-image-loader-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="universal-image-loader-1.9.3" level="project" />
     <orderEntry type="module" module-name="AndroidStaggeredGrid" exported="" />
   </component>

@@ -311,6 +311,9 @@ public class DrawerTestActivity extends ActionBarActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_loadmore) {
+            if(currentCategory == 3){
+                 return false;
+            }
             requestData(currentCategory);
             return true;
         }
