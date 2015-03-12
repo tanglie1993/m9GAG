@@ -127,7 +127,7 @@ public class FeedsAdapter extends BaseAdapter
             }else{
                 System.out.println("recycle failed");
             }
-            convertView=null;
+
         }
         if(convertView == null) {
             convertView = layoutInflater.inflate(R.layout.feed_item_layout, null);
@@ -136,6 +136,7 @@ public class FeedsAdapter extends BaseAdapter
         final TextView tv1 = (TextView)convertView.findViewById(R.id.feedItemTextView);
         final ImageView iv = (ImageView)convertView.findViewById(R.id.feedItemImageView);
         final String caption = list.get(position).caption;
+        convertView.setTag(position);
 
         //从list对象中为子组件赋值
         tv1.setText(list.get(position).caption);
@@ -181,10 +182,15 @@ public class FeedsAdapter extends BaseAdapter
         }
 
         final int selectedPosition=position;
+        final View finalConvertView = convertView;
 
         ImageLoader.getInstance().loadImage(list.get(position).largeImageURL,null, new DisplayImageOptions.Builder().cacheOnDisk(true).build(), new ImageLoadingListener() {
 
             long time=0;
+            final int initialPosition = selectedPosition;
+            final View thisView = finalConvertView;
+            final TextView thisTextView = (TextView) thisView.findViewById(R.id.feedItemTextView);
+            final ImageView thisImageView = (ImageView) thisView.findViewById(R.id.feedItemImageView);
 
             @Override
             public void onLoadingStarted(String imageUri, View view) {
@@ -216,12 +222,16 @@ public class FeedsAdapter extends BaseAdapter
                 Bitmap compressed=BitmapProcessor.comp(loadedImage);
                 imageCache.put(imageUri, compressed);
                 CacheManager.insertIntoContentProvider(list.get(selectedPosition).id, loadedImage, context);
-                tv1.setText(list.get(selectedPosition).caption);
+
                 loadedImage.recycle();
+                if((Integer) thisView.getTag() == initialPosition){
+                    thisTextView.setText(list.get(initialPosition).caption);
+                    thisImageView.setImageBitmap(BitmapProcessor.adjustBitmap(compressed, context));
+
+                }
 
                 System.out.println("size(after):"+loadedImage.getByteCount());
 
-                iv.setImageBitmap(BitmapProcessor.adjustBitmap(compressed, context));
                 System.out.println("setImageBitmap from ImageLoadingListener");
             }
 
