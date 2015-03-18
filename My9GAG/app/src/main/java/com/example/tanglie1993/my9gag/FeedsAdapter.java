@@ -239,11 +239,6 @@ public class FeedsAdapter extends BaseAdapter
             public void onLoadingCancelled(String imageUri, View view) {
                 System.out.println("LoadingCancelled");
             }
-        },  new ImageLoadingProgressListener() {
-            @Override
-            public void onProgressUpdate(String imageUri, View view, int current, int total) {
-                tv1.setText(""+Math.round((float)current*100/(float) total)+"%");
-            }
         });
         return convertView;
     }
