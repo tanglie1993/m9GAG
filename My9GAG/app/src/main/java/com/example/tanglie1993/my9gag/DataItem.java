@@ -10,6 +10,7 @@ public class DataItem {
     public String caption;
     public String largeImageURL;
     public String next;
+    public String displayText;
     public int category;
 
 }

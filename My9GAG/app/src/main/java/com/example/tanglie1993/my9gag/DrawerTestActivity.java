@@ -215,28 +215,11 @@ public class DrawerTestActivity extends ActionBarActivity
                     item.category=position;
                     item.id=feed.id;
                     item.largeImageURL=feed.images.large;
+                    item.displayText="0%";
 
                     dataItemList[position].add(item);
                     myAdapter.notifyDataSetChanged();
 
-
-                    /*
-
-                    final int positionMarker=dataItemList[position].size()-1;
-                    ImageRequest imageRequest = new ImageRequest(feed.images.large,
-                            new Response.Listener<Bitmap>()
-                            {
-                                @Override
-                                public void onResponse(Bitmap response)
-                                {
-                                    DataItem updateItem= (DataItem) dataItemList[position].get(positionMarker);
-                                    updateItem.largeImage=response;
-                                    myAdapter.notifyDataSetChanged();
-                                }
-                            }, 0, 0, Bitmap.Config.RGB_565, null);
-                    mQueue.add(imageRequest);
-
-                    */
 
                     System.out.println(feed.caption);
                     onScrollEnabled=true;

@@ -135,7 +135,7 @@ public class FeedsAdapter extends BaseAdapter
         //得到条目中的子组件
         final TextView tv1 = (TextView)convertView.findViewById(R.id.feedItemTextView);
         final ImageView iv = (ImageView)convertView.findViewById(R.id.feedItemImageView);
-        final String caption = list.get(position).caption;
+        final String caption = list.get(position).displayText;
         convertView.setTag(position);
 
         //从list对象中为子组件赋值
@@ -224,6 +224,7 @@ public class FeedsAdapter extends BaseAdapter
                 CacheManager.insertIntoContentProvider(list.get(selectedPosition).id, loadedImage, context);
 
                 loadedImage.recycle();
+                list.get(initialPosition).displayText = list.get(initialPosition).caption;
                 if((Integer) thisView.getTag() == initialPosition){
                     thisTextView.setText(list.get(initialPosition).caption);
                     thisImageView.setImageBitmap(BitmapProcessor.adjustBitmap(compressed, context));
