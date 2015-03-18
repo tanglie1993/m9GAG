@@ -241,9 +241,19 @@ public class FeedsAdapter extends BaseAdapter
                 System.out.println("LoadingCancelled");
             }
         },  new ImageLoadingProgressListener() {
+
+            final int initialPosition = selectedPosition;
+            final View thisView = finalConvertView;
+            final TextView thisTextView = (TextView) thisView.findViewById(R.id.feedItemTextView);
+
             @Override
             public void onProgressUpdate(String imageUri, View view, int current, int total) {
-                tv1.setText(""+Math.round((float)current*100/(float) total)+"%");
+                String progress = ""+Math.round((float)current*100/(float) total)+"%";
+                list.get(initialPosition).displayText = progress;
+                if((Integer) thisView.getTag() == initialPosition){
+                    thisTextView.setText(progress);
+
+                }
             }
         });
         return convertView;
